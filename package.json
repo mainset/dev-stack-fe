@@ -1,0 +1,16 @@
+{
+  "name": "@mainset/dev-stack-fe",
+  "version": "0.0.1",
+  "description": "Modern dev stack for front-end infrastructure for mainset projects",
+  "type": "module",
+  "homepage": "https://github.com/yuzhva/dev-stack-fe",
+  "bugs": {
+    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+  },
+  "license": "CC-BY-NC-4.0",
+  "author": "yevhen uzhva"
+}
