@@ -1,16 +1,25 @@
 {
-  "name": "@mainset/dev-stack-fe",
-  "version": "0.0.1",
-  "description": "Modern dev stack for front-end infrastructure for mainset projects",
-  "type": "module",
-  "homepage": "https://github.com/yuzhva/dev-stack-fe",
-  "bugs": {
-    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+  "engines": {
+    "node": ">=18"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+  "scripts": {
+    "purge:workspace--node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "purge:workspace--dist": "find . -name 'dist' -type d -prune -exec rm -rf '{}' +",
+    "purge": "npm run purge:workspace--node_modules && npm run purge:workspace--dist",
+    "build:apps": "pnpm --filter \"./apps/**\" build",
+    "pre-build:compile--cli": "pnpm --filter \"./packages/cli\" build",
+    "pre-build:compile--primitive-utils": "pnpm --filter \"./packages/toolkit-js\" build",
+    "build:packages--code-compilers": "pnpm --filter \"./packages/{builder-rslib,bundler-webpack}\" build",
+    "build:packages--node-modules": "pnpm  --filter \"!./packages/{cli,builder-rslib,bundler-webpack}\" --filter \"./packages/**\" build",
+    "build:packages": "npm run build:packages--code-compilers && npm run build:packages--node-modules",
+    "dev:apps": "pnpm --filter \"./apps/**\" dev",
+    "dev:packages": "pnpm --filter \"./packages/**\" --parallel dev",
+    "ci:preinstall": "./scripts/packages-scripts.sh preinstall",
+    "ci:prebuild": "./scripts/packages-scripts.sh prebuild",
+    "setup:initial": "./scripts/packages-scripts.sh setup_initial",
+    "s:i": "npm run setup:initial"
   },
-  "license": "CC-BY-NC-4.0",
-  "author": "yevhen uzhva"
+  "dependencies": {
+    "cross-env": "^7.0.3"
+  }
 }

@@ -1,0 +1,6 @@
+# general
+.gitignore
+.keep
+
+# packages
+.prettierignore
