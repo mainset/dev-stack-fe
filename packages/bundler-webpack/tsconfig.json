@@ -1,0 +1,8 @@
+{
+  "extends": "@mainset/dev-stack-fe/tsconfig--esm",
+  "compilerOptions": {
+    "outDir": "./dist/esm",
+    // NOTE: remove when webpack config will be migrated to TS
+    "allowJs": true
+  }
+}
