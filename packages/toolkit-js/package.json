@@ -1,0 +1,33 @@
+{
+  "name": "@mainset/toolkit-js",
+  "version": "0.1.0",
+  "description": "Set of reusable JavaScript tools",
+  "homepage": "https://github.com/yuzhva/dev-stack-fe/packages/toolkit-js",
+  "bugs": {
+    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+  },
+  "license": "CC-BY-NC-4.0",
+  "author": "yevhen uzhva",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.mts",
+      "import": "./dist/esm/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "ms-cli source-code --exec compile",
+    "dev": "cross-env NODE_ENV=development ms-cli source-code --exec watch"
+  },
+  "devDependencies": {
+    "@mainset/cli": "workspace:^",
+    "@mainset/dev-stack-fe": "workspace:^"
+  },
+  "peerDependencies": {
+    "@mainset/dev-stack-fe": "0.1.0"
+  }
+}
