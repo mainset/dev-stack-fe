@@ -1,0 +1,8 @@
+{
+  "extends": "@mainset/dev-stack-fe/tsconfig--type-only",
+  "compilerOptions": {
+    "outDir": "./dist/types",
+    // TODO: review possibility to move into {common} config
+    "target": "es2017"
+  }
+}

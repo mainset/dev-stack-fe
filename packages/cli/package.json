@@ -1,0 +1,53 @@
+{
+  "name": "@mainset/cli",
+  "version": "0.1.0",
+  "description": "A unified CLI tool for accelerating development, based on mainset vision of front-end infrastructure",
+  "homepage": "https://github.com/yuzhva/dev-stack-fe/packages/cli",
+  "bugs": {
+    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+  },
+  "license": "CC-BY-NC-4.0",
+  "author": "yevhen uzhva",
+  "type": "module",
+  "exports": {
+    "./runtime": {
+      "types": "./dist/types/runtime/index.d.mts",
+      "import": "./dist/esm/runtime/index.mjs"
+    },
+    "./process-env-type": "./dist/types/@types/process.env.d.ts",
+    "./ssr-server": {
+      "types": "./dist/types/services/ssr-server/index.d.mts"
+    }
+  },
+  "bin": {
+    "ms-cli": "./dist/esm/mainset-cli.mjs"
+  },
+  "scripts": {
+    "build:source": "node ./node_modules/@mainset/dev-stack-fe/node_modules/typescript/bin/tsc --project ./tsconfig.json",
+    "build:type": "node ./node_modules/@mainset/dev-stack-fe/node_modules/typescript/bin/tsc --project ./tsconfig.build-type.json",
+    "build": "npm run purge:dist && npm run build:source && npm run build:type",
+    "dev": "cross-env NODE_ENV=development npm run build && node ./dist/esm/mainset-cli.mjs source-code --exec watch",
+    "purge:dist": "rm -rf ./dist"
+  },
+  "dependencies": {
+    "@types/node": "^22.15.21",
+    "commander": "^14.0.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5"
+  },
+  "devDependencies": {
+    "@mainset/dev-stack-fe": "workspace:^",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.21"
+  },
+  "peerDependencies": {
+    "@mainset/dev-stack-fe": "0.1.0"
+  }
+}

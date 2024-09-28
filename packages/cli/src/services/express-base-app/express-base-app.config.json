@@ -1,0 +1,9 @@
+{
+  "listenPort": 3000,
+  "serveStatics": [
+    {
+      "rootPath": "./dist",
+      "publicPath": "/"
+    }
+  ]
+}
