@@ -1,0 +1,7 @@
+{
+  "extends": ["./tsconfig.json", "./tsconfig.common.fragment.json"],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "nodenext"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@mainset/dev-stack-fe",
+  "version": "0.1.0",
+  "description": "Modern dev stack for front-end infrastructure for mainset projects",
+  "homepage": "https://github.com/yuzhva/dev-stack-fe/packages/dev-stack-fe",
+  "bugs": {
+    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+  },
+  "license": "CC-BY-NC-4.0",
+  "author": "yevhen uzhva",
+  "type": "module",
+  "exports": {
+    "./tsconfig--esm": "./src/typescript/tsconfig.esm.json",
+    "./tsconfig--bundler": "./src/typescript/tsconfig.bundler.json",
+    "./tsconfig--type-only": "./src/typescript/tsconfig.type-only.json",
+    "./tschunk--react": "./src/typescript/tsconfig.react.fragment.json"
+  },
+  "dependencies": {
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
