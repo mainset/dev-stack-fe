@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": ">=18"
+    "node": ">=22.14.0"
   },
   "scripts": {
     "purge:workspace--node_modules": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
@@ -19,7 +19,10 @@
     "setup:initial": "./scripts/packages-scripts.sh setup_initial",
     "s:i": "npm run setup:initial"
   },
-  "dependencies": {
-    "cross-env": "^7.0.3"
-  }
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "eslint": "^9.29.0",
+    "prettier": "^3.5.3"
+  },
+  "packageManager": "pnpm@10.12.1"
 }

@@ -2,5 +2,8 @@
 .gitignore
 .keep
 
+# package manager
+pnpm-lock.yaml
+
 # packages
 .prettierignore
