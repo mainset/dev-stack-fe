@@ -19,12 +19,16 @@
     "./tsconfig--type-only": "./src/typescript/tsconfig.type-only.json",
     "./tschunk--react": "./src/typescript/tsconfig.react.fragment.json",
     "./eslint": "./src/eslint/index.mjs",
-    "./prettier": "./src/prettier.config.mjs"
+    "./prettier": "./src/prettier.config.mjs",
+    "./lint-staged": "./src/lint-staged.config.mjs",
+    "./commitlint": "./src/commitlint.config.mjs"
   },
   "dependencies": {
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.29.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "cross-env": "^7.0.3",
