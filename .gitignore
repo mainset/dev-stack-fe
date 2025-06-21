@@ -6,3 +6,6 @@ node_modules
 
 # architecture base structure
 dist
+
+# files
+.npmrc
