@@ -2,13 +2,13 @@
   "name": "@mainset/cli",
   "version": "0.1.0",
   "description": "A unified CLI tool for accelerating development, based on mainset vision of front-end infrastructure",
-  "homepage": "https://github.com/yuzhva/dev-stack-fe/packages/cli",
+  "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/cli",
   "bugs": {
-    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+    "url": "https://github.com/mainset/dev-stack-fe/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+    "url": "https://github.com/mainset/dev-stack-fe.git"
   },
   "license": "CC-BY-NC-4.0",
   "author": "yevhen uzhva",
