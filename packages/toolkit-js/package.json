@@ -13,6 +13,10 @@
   "license": "CC-BY-NC-4.0",
   "author": "yevhen uzhva",
   "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/types/index.d.mts",

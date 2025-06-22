@@ -1,0 +1,56 @@
+name: Install and Cache Dependencies
+description: Setup Node.js, pnpm, and cache
+runs:
+  using: 'composite'
+  steps:
+    # Check and copy .npmrc.example if it exists
+    - name: Copy .npmrc.example to .npmrc if present
+      run: |
+        if [ -f .npmrc.example ]; then
+          echo "📋 Found .npmrc.example, copying to .npmrc ..."
+          cp .npmrc.example .npmrc
+        fi
+      shell: bash
+
+    # Restore pnpm store from cache if GitHub Action been running on commit before
+    - name: Restore pnpm store from cache
+      uses: actions/cache@v4
+      with:
+        path: .pnpm-store
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    # Setup Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    # Enable corepack and prepare pnpm
+    - name: Enable corepack and prepare pnpm
+      run: |
+        corepack enable
+        corepack prepare pnpm@latest-10 --activate
+        pnpm config set store-dir .pnpm-store
+      shell: bash
+
+    # NOTE: Caching the pnpm store here speeds up installs for any job using this action,
+    # as long as the cache key matches. The cache is available to other jobs in the same
+    # workflow run, or in future runs for the same commit, once it has been uploaded.
+
+    # Cache pnpm store
+    - name: Cache pnpm store
+      uses: actions/cache@v4
+      with:
+        path: .pnpm-store
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    # Install dependencies
+    - name: Install dependencies
+      run: |
+        pnpm run ci:preinstall
+        pnpm install
+      shell: bash

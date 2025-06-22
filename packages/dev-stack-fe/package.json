@@ -13,6 +13,10 @@
   "license": "CC-BY-NC-4.0",
   "author": "yevhen uzhva",
   "type": "module",
+  "sideEffects": false,
+  "files": [
+    "src"
+  ],
   "exports": {
     "./tsconfig--esm": "./src/typescript/tsconfig.esm.json",
     "./tsconfig--bundler": "./src/typescript/tsconfig.bundler.json",

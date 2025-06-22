@@ -1,0 +1,22 @@
+name: Build packages
+description: Build all packages in the repository
+runs:
+  using: 'composite'
+  steps:
+    # Build all packages
+    - name: Build all packages
+      run: |
+        pnpm run ci:prebuild
+        pnpm run build:packages
+      shell: bash
+
+    # NOTE: does not make sense to upload artifacts in an action
+    # because the action is just a part/step of the workflow job.
+    # It is applicable for shared workflows when artifacts are shared between jobs.
+
+    # # Save build artifacts
+    # - name: Upload build artifacts
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: dist
+    #     path: packages/**/dist/

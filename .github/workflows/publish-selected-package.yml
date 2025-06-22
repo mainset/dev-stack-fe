@@ -1,0 +1,87 @@
+name: Publish selected package
+
+on:
+  # Allows manual trigger from the Actions tab
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Choose package to publish'
+        required: true
+        type: choice
+        options:
+          - '@mainset/dev-stack-fe'
+          - '@mainset/cli'
+          - '@mainset/toolkit-js'
+          - '@mainset/builder-rslib'
+          - '@mainset/bundler-webpack'
+
+run-name: Publish ${{ github.event.inputs.package }}
+
+jobs:
+  publish-selected-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Download / clone repository code onto the runner
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install-and-cache-dependencies
+      - uses: ./.github/actions/build-packages
+
+      # NOTE: this step could be used in case when {build-packages} is standalone job
+      # and we want to download build artifacts from previous job as they arn't shared / available
+
+      # Download build artifacts
+      # - name: Download build artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: dist
+      #     path: .
+
+      - name: Set package version
+        run: |
+          cd $(pnpm --filter "${{ github.event.inputs.package }}" exec pwd)
+              echo "PACKAGE__VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Set package tag name
+        run: |
+          if [ "${GITHUB_REF#refs/heads/}" = "${GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH}" ]; then
+            echo "IS_PRODUCTION_RELEASE=true" >> $GITHUB_ENV
+            echo "PACKAGE__TAG_NAME=latest" >> $GITHUB_ENV
+          else
+            echo "IS_PRODUCTION_RELEASE=false" >> $GITHUB_ENV
+            echo "PACKAGE__TAG_NAME=next" >> $GITHUB_ENV
+          fi
+          echo "RELEASE_NAME=${{ github.event.inputs.package }}@${PACKAGE__VERSION}" >> $GITHUB_ENV
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_EVENT_REPOSITORY_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
+      - name: Check for "Release Candidate" suffix in version
+        run: |
+          if [ "$IS_PRODUCTION_RELEASE" = "false" ]; then
+            if ! echo "$PACKAGE__VERSION" | grep -E -q "\-rc\.[0-9]+$"; then
+              echo "❌ Error: Package version must include '-rc.N' suffix in non-production releases"
+              echo "Current version: $PACKAGE__VERSION"
+              echo "Expected format: x.x.x-rc.N (example: 1.2.3-rc.1)"
+              exit 1
+            fi
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: '${{ env.RELEASE_NAME }}'
+          name: '${{ env.RELEASE_NAME }}'
+          body: |
+            Release of ${{ env.RELEASE_NAME }}
+
+            ${{ steps.commit_message.outputs.message }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish packages
+        run: |
+          echo "Publishing \"$RELEASE_NAME\" under \"$PACKAGE__TAG_NAME\" tag"
+          pnpm publish --filter "${{ github.event.inputs.package }}" --tag="$PACKAGE__TAG_NAME"

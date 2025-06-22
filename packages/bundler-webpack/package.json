@@ -13,6 +13,10 @@
   "license": "CC-BY-NC-4.0",
   "author": "yevhen uzhva",
   "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "ms-cli source-code --exec compile",
     "dev": "cross-env NODE_ENV=development ms-cli source-code --exec watch"

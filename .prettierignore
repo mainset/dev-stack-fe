@@ -4,6 +4,10 @@
 
 # package manager
 pnpm-lock.yaml
+.npmrc.example
 
 # packages
 .prettierignore
+
+# files
+*.sh

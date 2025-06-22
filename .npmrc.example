@@ -1,0 +1,3 @@
+# https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token
+@mainset:registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=${NPMRC_AUTH_TOKEN__MAINSET}
