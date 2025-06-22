@@ -84,4 +84,6 @@ jobs:
       - name: Publish packages
         run: |
           echo "Publishing \"$RELEASE_NAME\" under \"$PACKAGE__TAG_NAME\" tag"
-          pnpm publish --filter "${{ github.event.inputs.package }}" --tag="$PACKAGE__TAG_NAME"
+          pnpm publish --filter "${{ github.event.inputs.package }}" --tag="$PACKAGE__TAG_NAME" --access public --no-git-checks
+        env:
+          NPMRC_AUTH_TOKEN__MAINSET: ${{ secrets.NPMRC_AUTH_TOKEN__MAINSET }}

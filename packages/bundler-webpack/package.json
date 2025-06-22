@@ -2,13 +2,13 @@
   "name": "@mainset/bundler-webpack",
   "version": "0.1.0",
   "description": "Bundler for web apps",
-  "homepage": "https://github.com/yuzhva/dev-stack-fe/packages/bundler-webpack",
+  "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/bundler-webpack",
   "bugs": {
-    "url": "https://github.com/yuzhva/dev-stack-fe/issues"
+    "url": "https://github.com/mainset/dev-stack-fe/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yuzhva/dev-stack-fe.git"
+    "url": "https://github.com/mainset/dev-stack-fe.git"
   },
   "license": "CC-BY-NC-4.0",
   "author": "yevhen uzhva",
