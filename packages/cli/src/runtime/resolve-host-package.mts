@@ -12,18 +12,28 @@ function resolveHostPackageNodeModulesPath(
     `node_modules/${hostPackageName}/node_modules`,
   );
 
-  const isNodeModulesDeepNested = fs.existsSync(hostPackageNodeModulesPath);
+  const hostPackageDependencyPackagePath = path.join(
+    hostPackageNodeModulesPath,
+    dependencyPackageName,
+  );
 
-  return isNodeModulesDeepNested // Pnpm uses such a structure
-    ? path.join(hostPackageNodeModulesPath, dependencyPackageName)
-    : path.join(runtimePathById.root, 'node_modules', dependencyPackageName);
+  const isNodeModulesLinkedOrWorkspace = fs.existsSync(
+    hostPackageDependencyPackagePath,
+  );
+
+  // If the package is linked or part of a workspace, return the full path
+  // Otherwise, return just the package name (for packages installed from the registry)
+  return isNodeModulesLinkedOrWorkspace
+    ? hostPackageDependencyPackagePath
+    : dependencyPackageName;
 }
 
-async function resolveHostPackageBinForCLICommandPath(
+function resolveHostPackageBinForCLICommandPath(
   hostPackageName: string,
-  dependencyPackageName: string,
-  cliCommandName?: string,
+  // dependencyPackageName: string,
+  cliCommandName: string,
 ) {
+  /* Previous implementation
   // Pnpm node_modules structure
   const dependencyPackageNodeModulesPath = resolveHostPackageNodeModulesPath(
     hostPackageName,
@@ -40,6 +50,23 @@ async function resolveHostPackageBinForCLICommandPath(
     : packageJson.default.bin;
 
   return path.join(dependencyPackageNodeModulesPath, binPath);
+  */
+
+  // installed from the registry
+  const dependencyPackageNodeModulesPath = path.resolve(
+    runtimePathById.root,
+    `node_modules/.bin/${cliCommandName}`,
+  );
+
+  // linked / workspace:^ package
+  const dependencyWorkspacePackageNodeModulesPath = path.resolve(
+    runtimePathById.root,
+    `node_modules/${hostPackageName}/node_modules/.bin/${cliCommandName}`,
+  );
+
+  return fs.existsSync(dependencyPackageNodeModulesPath)
+    ? dependencyPackageNodeModulesPath
+    : dependencyWorkspacePackageNodeModulesPath;
 }
 
 export {

@@ -21,7 +21,7 @@ function registerSourceCodeCommand(program: Command) {
     .requiredOption('-e, --exec <type>', 'Execution mode: compile or watch')
     // .option('-b, --builder <builder>', 'Compiler tool (default: tsc)', 'tsc')
     .option('-c, --config <path>', 'Path to config file', './tsconfig.json')
-    .action(async (options) => {
+    .action((options) => {
       // Step 0: determinate command params
       const typeScriptSourceCodeConfigPath = path.join(
         runtimePathById.root,
@@ -37,12 +37,12 @@ function registerSourceCodeCommand(program: Command) {
           execPurgeDist();
 
           // Step 2: compile source code
-          await execTypeScriptCompileSourceCode({
+          execTypeScriptCompileSourceCode({
             configPath: typeScriptSourceCodeConfigPath,
           });
 
           // Step 3: compile type only
-          await execTypeScriptCompileTypeOnly();
+          execTypeScriptCompileTypeOnly();
 
           console.log('\n✅ Build completed successfully\n');
         } catch (error) {
@@ -57,12 +57,12 @@ function registerSourceCodeCommand(program: Command) {
           execPurgeDist();
 
           // Step 2: watch source code
-          await runTypeScriptCompileSourceCode({
+          runTypeScriptCompileSourceCode({
             configPath: typeScriptSourceCodeConfigPath,
           });
 
           // Step 3: watch type only
-          await runTypeScriptCompileTypeOnly();
+          runTypeScriptCompileTypeOnly();
         } catch (error) {
           initProcessCatchErrorLogger('source-code', error, 'watch');
         }

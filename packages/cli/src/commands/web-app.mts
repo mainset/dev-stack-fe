@@ -37,7 +37,7 @@ function registerWebAppCommand(program: Command) {
       'Serve mode: ssr or csr (default: ssr)',
       'ssr',
     )
-    .action(async (options) => {
+    .action((options) => {
       // Step 0: determinate command params
       const customWebpackConfigPath = path.resolve(
         runtimePathById.root,
@@ -45,12 +45,10 @@ function registerWebAppCommand(program: Command) {
       );
 
       // Webpack paths
-      const webpackCLICommandPath =
-        await resolveHostPackageBinForCLICommandPath(
-          '@mainset/bundler-webpack',
-          'webpack',
-          'webpack',
-        );
+      const webpackCLICommandPath = resolveHostPackageBinForCLICommandPath(
+        '@mainset/bundler-webpack',
+        'webpack',
+      );
       const webpackSSRConfigPath = fs.existsSync(customWebpackConfigPath)
         ? customWebpackConfigPath
         : path.resolve(
@@ -79,12 +77,12 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:ssr-webapp source code
             console.log('\n📦 Compiling SSR WebApp with Webpack ...');
             execImmediateCommand(
-              `node ${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
+              `${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
             );
 
             // Step 3: build:ssr-server source code
             console.log('\n📦 Compiling SSR Server with Rslib ...');
-            await execRslibCLICommand(`build --config ${rslibSSRConfigPath}`);
+            execRslibCLICommand(`build --config ${rslibSSRConfigPath}`);
 
             console.log('\n✅ SSR Build completed successfully\n');
           } else {
@@ -103,7 +101,7 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:csr-webapp source code
             console.log('\n📦 Compiling CSR WebApp with Webpack ...');
             execImmediateCommand(
-              `node ${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
+              `${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
             );
 
             console.log('\n✅ CSR Build completed successfully\n');
@@ -129,7 +127,7 @@ function registerWebAppCommand(program: Command) {
             );
 
             // Step 1: watch:ssr-server start ssr server
-            await runRslibCLICommand([
+            runRslibCLICommand([
               'build',
               '--config',
               rslibSSRConfigPath,
@@ -137,8 +135,7 @@ function registerWebAppCommand(program: Command) {
             ]);
 
             // Step 2: watch:ssr-webapp source code of web app
-            runStreamingCommand('node', [
-              webpackCLICommandPath,
+            runStreamingCommand(webpackCLICommandPath, [
               '--config',
               webpackSSRConfigPath,
               '--watch',
@@ -164,8 +161,7 @@ function registerWebAppCommand(program: Command) {
                 );
 
             // Step 1: watch:csr-server / start:csr-server source code
-            runStreamingCommand('node', [
-              webpackCLICommandPath,
+            runStreamingCommand(webpackCLICommandPath, [
               'serve',
               '--config',
               webpackDevServerConfigPath,

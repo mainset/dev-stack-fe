@@ -36,5 +36,10 @@
     "@mainset/cli": "workspace:^",
     "@mainset/dev-stack-fe": "workspace:^",
     "@mainset/toolkit-js": "workspace:^"
+  },
+  "peerDependencies": {
+    "@mainset/cli": "^0.1.0",
+    "@mainset/dev-stack-fe": "^0.1.0",
+    "@mainset/toolkit-js": "^0.1.0"
   }
 }

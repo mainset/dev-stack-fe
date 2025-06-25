@@ -22,7 +22,7 @@ function registerNodePackageCommand(program: Command) {
     .requiredOption('-e, --exec <type>', 'Execution mode: build or watch')
     // .option('-b, --builder <builder>', 'Builder tool (default: rslib)', 'rslib')
     .option('-c, --config <path>', 'Path to config file', './rslib.config.mts')
-    .action(async (options) => {
+    .action((options) => {
       // Step 0: determinate command params
       const customRslibConfigPath = path.resolve(
         runtimePathById.root,
@@ -47,10 +47,10 @@ function registerNodePackageCommand(program: Command) {
 
           // Step 2: build source code
           console.log('\n📦 Compiling Source Code with Rslib ...');
-          await execRslibCLICommand(`build --config ${rslibConfigPath}`);
+          execRslibCLICommand(`build --config ${rslibConfigPath}`);
 
           // Step 3: build type only
-          await execTypeScriptCompileTypeOnly();
+          execTypeScriptCompileTypeOnly();
 
           console.log('\n✅ Build completed successfully\n');
         } catch (error) {
@@ -65,15 +65,10 @@ function registerNodePackageCommand(program: Command) {
           execPurgeDist();
 
           // Step 2: watch source code
-          await runRslibCLICommand([
-            'build',
-            '--config',
-            rslibConfigPath,
-            '--watch',
-          ]);
+          runRslibCLICommand(['build', '--config', rslibConfigPath, '--watch']);
 
           // Step 3: watch type only
-          await runTypeScriptCompileTypeOnly();
+          runTypeScriptCompileTypeOnly();
         } catch (error) {
           initProcessCatchErrorLogger('node-package', error, 'watch');
         }
