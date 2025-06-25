@@ -153,13 +153,6 @@ function registerWebAppCommand(program: Command) {
             ]);
           } else {
             // ========== [Serve] CSR mode ==========
-
-            const webpackDevServerCLICommandPath =
-              await resolveHostPackageBinForCLICommandPath(
-                '@mainset/bundler-webpack',
-                'webpack-dev-server',
-              );
-
             const webpackDevServerConfigPath = fs.existsSync(
               customWebpackConfigPath,
             )
@@ -172,7 +165,8 @@ function registerWebAppCommand(program: Command) {
 
             // Step 1: watch:csr-server / start:csr-server source code
             runStreamingCommand('node', [
-              webpackDevServerCLICommandPath,
+              webpackCLICommandPath,
+              'serve',
               '--config',
               webpackDevServerConfigPath,
               '--open',
