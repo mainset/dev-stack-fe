@@ -4,26 +4,25 @@ import {
   runStreamingCommand,
 } from '../../utils/index.mjs';
 
-async function getRslibCLICommandPath() {
-  const rslibCLICommandPath = await resolveHostPackageBinForCLICommandPath(
+function getRslibCLICommandPath() {
+  const rslibCLICommandPath = resolveHostPackageBinForCLICommandPath(
     '@mainset/builder-rslib',
-    '@rslib/core',
     'rslib',
   );
 
   return rslibCLICommandPath;
 }
 
-async function execRslibCLICommand(command: string) {
-  const rslibCLICommandPath = await getRslibCLICommandPath();
+function execRslibCLICommand(command: string) {
+  const rslibCLICommandPath = getRslibCLICommandPath();
 
-  return execImmediateCommand(`node ${rslibCLICommandPath} ${command}`);
+  return execImmediateCommand(`${rslibCLICommandPath} ${command}`);
 }
 
-async function runRslibCLICommand(commandParams: string[]) {
-  const rslibCLICommandPath = await getRslibCLICommandPath();
+function runRslibCLICommand(commandParams: string[]) {
+  const rslibCLICommandPath = getRslibCLICommandPath();
 
-  return runStreamingCommand('node', [rslibCLICommandPath, ...commandParams]);
+  return runStreamingCommand(rslibCLICommandPath, [...commandParams]);
 }
 
 export { execRslibCLICommand, runRslibCLICommand };

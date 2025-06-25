@@ -9,10 +9,9 @@ import {
   runStreamingCommand,
 } from '../../utils/index.mjs';
 
-async function getTscCLICommandPath() {
-  const tscCLICommandPath = await resolveHostPackageBinForCLICommandPath(
+function getTscCLICommandPath() {
+  const tscCLICommandPath = resolveHostPackageBinForCLICommandPath(
     '@mainset/dev-stack-fe',
-    'typescript',
     'tsc',
   );
 
@@ -20,31 +19,26 @@ async function getTscCLICommandPath() {
 }
 
 // Source code
-async function execTypeScriptCompileSourceCode({
+function execTypeScriptCompileSourceCode({
   configPath,
 }: {
   configPath: string;
 }) {
-  const tscCLICommandPath = await getTscCLICommandPath();
+  const tscCLICommandPath = getTscCLICommandPath();
 
   console.log('\n📦 Compiling Source Code with TypeScript ...');
-  execImmediateCommand(`node ${tscCLICommandPath} --project ${configPath}`);
+  execImmediateCommand(`${tscCLICommandPath} --project ${configPath}`);
 }
 
-async function runTypeScriptCompileSourceCode({
+function runTypeScriptCompileSourceCode({
   configPath,
 }: {
   configPath: string;
 }) {
-  const tscCLICommandPath = await getTscCLICommandPath();
+  const tscCLICommandPath = getTscCLICommandPath();
 
   console.log('\n📝 Compiling .d.ts Types in watch mode ...');
-  runStreamingCommand('node', [
-    tscCLICommandPath,
-    '--project',
-    configPath,
-    '--watch',
-  ]);
+  runStreamingCommand(tscCLICommandPath, ['--project', configPath, '--watch']);
 }
 
 // Type only
@@ -59,25 +53,20 @@ function getTypeScriptTypeOnlyConfigPath() {
   };
 }
 
-async function execTypeScriptCompileTypeOnly() {
+function execTypeScriptCompileTypeOnly() {
   const { configPath } = getTypeScriptTypeOnlyConfigPath();
-  const tscCLICommandPath = await getTscCLICommandPath();
+  const tscCLICommandPath = getTscCLICommandPath();
 
   console.log('\n📝 Compiling .d.ts Types in build mode ...');
-  execImmediateCommand(`node ${tscCLICommandPath} --project ${configPath}`);
+  execImmediateCommand(`${tscCLICommandPath} --project ${configPath}`);
 }
 
-async function runTypeScriptCompileTypeOnly() {
+function runTypeScriptCompileTypeOnly() {
   const { configPath } = getTypeScriptTypeOnlyConfigPath();
-  const tscCLICommandPath = await getTscCLICommandPath();
+  const tscCLICommandPath = getTscCLICommandPath();
 
   console.log('\n📝 Compiling .d.ts Types in watch mode ...');
-  runStreamingCommand('node', [
-    tscCLICommandPath,
-    '--project',
-    configPath,
-    '--watch',
-  ]);
+  runStreamingCommand(tscCLICommandPath, ['--project', configPath, '--watch']);
 }
 
 export {
