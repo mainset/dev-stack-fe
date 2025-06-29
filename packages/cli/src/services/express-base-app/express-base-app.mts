@@ -63,7 +63,7 @@ class ExpressBaseApp {
   // }
 
   // ========== Public ==========
-  public async startListening() {
+  public startListening() {
     this.app.listen(this.listenPort, async () => {
       const packageJson = await import(
         path.resolve(runtimePathById.root, 'package.json'),
