@@ -44,6 +44,17 @@ function registerWebAppCommand(program: Command) {
         options.config || './config/webpack.config.mjs',
       );
 
+      // SSR server path
+      const ssrServerEntryPath = path.resolve(
+        runtimePathById.msCLISrc,
+        '../services/ssr-server/ssr-server.mjs',
+      );
+
+      const ssrServerConfigCompiledPath = path.resolve(
+        runtimePathById.dist,
+        './private/ssr-server.config.mjs',
+      );
+
       // Webpack paths
       const webpackCLICommandPath = resolveHostPackageBinForCLICommandPath(
         '@mainset/bundler-webpack',
@@ -57,6 +68,7 @@ function registerWebAppCommand(program: Command) {
             '@mainset/bundler-webpack/dist/esm/webpack-config/webapp.ssr.config.mjs',
           );
 
+      // Rslib paths
       const rslibSSRConfigPath = path.resolve(
         runtimePathById.root,
         'node_modules',
@@ -117,15 +129,6 @@ function registerWebAppCommand(program: Command) {
           if (options.serveMode === 'ssr') {
             // ========== [Serve] SSR mode ==========
 
-            const ssrServerEntryPath = path.resolve(
-              runtimePathById.msCLISrc,
-              '../services/ssr-server/ssr-server.mjs',
-            );
-            const ssrServerConfigCompiledPath = path.resolve(
-              runtimePathById.dist,
-              './private/ssr-server.config.mjs',
-            );
-
             // Step 1: watch:ssr-server start ssr server
             runRslibCLICommand([
               'build',
@@ -176,31 +179,45 @@ function registerWebAppCommand(program: Command) {
         console.log('\n🏗️  [mainset cli] web-app: serve-static');
 
         try {
-          // Step 1: determinate command params
-          const serverEntryPath = path.resolve(
-            runtimePathById.msCLISrc,
-            '../services/serve-static/serve-static.mjs',
-          );
+          if (options.serveMode === 'ssr') {
+            // ========== [Serve Static] SSR mode ==========
 
-          const customServeStaticConfigPath = path.resolve(
-            runtimePathById.root,
-            options.config || './config/serve-static.config.json',
-          );
-          const serveStaticConfigPath = fs.existsSync(
-            customServeStaticConfigPath,
-          )
-            ? customServeStaticConfigPath
-            : path.resolve(
-                runtimePathById.msCLISrc,
-                '../services/express-base-app/express-base-app.config.json',
-              );
+            // Step 3: start:ssr-server which is compiled web app and ssr-server code
+            runStreamingCommand('node', [
+              '--watch', // Enable watch mode for {node}
+              ssrServerEntryPath,
+              '--ssrServerConfig',
+              ssrServerConfigCompiledPath,
+            ]);
+          } else {
+            // ========== [Serve Static] CSR mode ==========
 
-          // Step 2: serve static compiled files
-          runStreamingCommand('node', [
-            serverEntryPath,
-            '--serveStaticConfig',
-            serveStaticConfigPath,
-          ]);
+            // Step 1: determinate command params
+            const serverEntryPath = path.resolve(
+              runtimePathById.msCLISrc,
+              '../services/serve-static/serve-static.mjs',
+            );
+
+            const customServeStaticConfigPath = path.resolve(
+              runtimePathById.root,
+              options.config || './config/serve-static.config.json',
+            );
+            const serveStaticConfigPath = fs.existsSync(
+              customServeStaticConfigPath,
+            )
+              ? customServeStaticConfigPath
+              : path.resolve(
+                  runtimePathById.msCLISrc,
+                  '../services/express-base-app/express-base-app.config.json',
+                );
+
+            // Step 2: serve static compiled files
+            runStreamingCommand('node', [
+              serverEntryPath,
+              '--serveStaticConfig',
+              serveStaticConfigPath,
+            ]);
+          }
         } catch (error) {
           initProcessCatchErrorLogger('web-app', error, 'serve-static');
         }
