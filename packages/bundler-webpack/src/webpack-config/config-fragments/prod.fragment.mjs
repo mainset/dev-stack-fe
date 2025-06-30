@@ -1,4 +1,8 @@
+import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
+
+import { cssStylesUseOptions } from './use-options/index.mjs';
 
 const prodWebpackConfigFragment = {
   mode: 'production',
@@ -21,6 +25,48 @@ const prodWebpackConfigFragment = {
       },
     },
   },
+  module: {
+    rules: [
+      // Pure CSS support without CSS Modules
+      {
+        test: /\.(sa|sc|c)ss$/,
+        oneOf: [
+          // CSS Modules
+          {
+            test: /\.module\.(sa|sc|c)ss$/,
+            use: [
+              MiniCssExtractPlugin.loader,
+              // NOTE: allow {css-loader} to transform CSS Modules to hashed class names
+              resolveHostPackageNodeModulesPath(
+                '@mainset/bundler-webpack',
+                'css-loader',
+              ),
+              ...cssStylesUseOptions,
+            ],
+          },
+          // Pure CSS support without CSS Modules
+          {
+            use: [
+              MiniCssExtractPlugin.loader,
+              // NOTE: do NOT transform Global CSS class names to hashed class names
+              // as there is regular string used as class in the app code which will not be transformed
+              resolveHostPackageNodeModulesPath(
+                '@mainset/bundler-webpack',
+                'css-loader',
+              ),
+              ...cssStylesUseOptions,
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[chunkhash:8].min.css',
+      chunkFilename: 'css/[id].[chunkhash:8].min.css',
+    }),
+  ],
 };
 
 export { prodWebpackConfigFragment };
