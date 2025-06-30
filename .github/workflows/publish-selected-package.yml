@@ -69,6 +69,20 @@ jobs:
             fi
           fi
 
+      # Get PR description or last commit message for release body
+      - name: Set release body
+        id: release_body
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            echo "${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            git log -1 --pretty=%B >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -77,7 +91,7 @@ jobs:
           body: |
             Release of ${{ env.RELEASE_NAME }}
 
-            ${{ steps.commit_message.outputs.message }}
+            ${{ steps.release_body.outputs.body }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
