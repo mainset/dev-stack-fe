@@ -19,7 +19,7 @@ function getTscCLICommandPath() {
 }
 
 // Source code
-function execTypeScriptCompileSourceCode({
+function execImmediateTypeScriptCompileSourceCode({
   configPath,
 }: {
   configPath: string;
@@ -30,7 +30,7 @@ function execTypeScriptCompileSourceCode({
   execImmediateCommand(`${tscCLICommandPath} --project ${configPath}`);
 }
 
-function runTypeScriptCompileSourceCode({
+function runStreamingTypeScriptCompileSourceCode({
   configPath,
 }: {
   configPath: string;
@@ -53,7 +53,7 @@ function getTypeScriptTypeOnlyConfigPath() {
   };
 }
 
-function execTypeScriptCompileTypeOnly() {
+function execImmediateTypeScriptCompileTypeOnly() {
   const { configPath } = getTypeScriptTypeOnlyConfigPath();
   const tscCLICommandPath = getTscCLICommandPath();
 
@@ -61,7 +61,7 @@ function execTypeScriptCompileTypeOnly() {
   execImmediateCommand(`${tscCLICommandPath} --project ${configPath}`);
 }
 
-function runTypeScriptCompileTypeOnly() {
+function runStreamingTypeScriptCompileTypeOnly() {
   const { configPath } = getTypeScriptTypeOnlyConfigPath();
   const tscCLICommandPath = getTscCLICommandPath();
 
@@ -70,8 +70,8 @@ function runTypeScriptCompileTypeOnly() {
 }
 
 export {
-  execTypeScriptCompileSourceCode,
-  execTypeScriptCompileTypeOnly,
-  runTypeScriptCompileSourceCode,
-  runTypeScriptCompileTypeOnly,
+  execImmediateTypeScriptCompileSourceCode,
+  execImmediateTypeScriptCompileTypeOnly,
+  runStreamingTypeScriptCompileSourceCode,
+  runStreamingTypeScriptCompileTypeOnly,
 };

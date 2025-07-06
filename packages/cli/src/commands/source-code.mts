@@ -7,11 +7,11 @@ import {
   initProcessCatchErrorLogger,
 } from '../utils/index.mjs';
 import {
-  execPurgeDist,
-  execTypeScriptCompileSourceCode,
-  execTypeScriptCompileTypeOnly,
-  runTypeScriptCompileSourceCode,
-  runTypeScriptCompileTypeOnly,
+  execImmediatePurgeDist,
+  execImmediateTypeScriptCompileSourceCode,
+  execImmediateTypeScriptCompileTypeOnly,
+  runStreamingTypeScriptCompileSourceCode,
+  runStreamingTypeScriptCompileTypeOnly,
 } from './process-runner-chunks/index.mjs';
 
 function registerSourceCodeCommand(program: Command) {
@@ -34,15 +34,15 @@ function registerSourceCodeCommand(program: Command) {
 
         try {
           // Step 1: purge dist folder
-          execPurgeDist();
+          execImmediatePurgeDist();
 
           // Step 2: compile source code
-          execTypeScriptCompileSourceCode({
+          execImmediateTypeScriptCompileSourceCode({
             configPath: typeScriptSourceCodeConfigPath,
           });
 
           // Step 3: compile type only
-          execTypeScriptCompileTypeOnly();
+          execImmediateTypeScriptCompileTypeOnly();
 
           console.log('\n✅ Build completed successfully\n');
         } catch (error) {
@@ -54,15 +54,15 @@ function registerSourceCodeCommand(program: Command) {
 
         try {
           // Step 1: purge dist folder
-          execPurgeDist();
+          execImmediatePurgeDist();
 
           // Step 2: watch source code
-          runTypeScriptCompileSourceCode({
+          runStreamingTypeScriptCompileSourceCode({
             configPath: typeScriptSourceCodeConfigPath,
           });
 
           // Step 3: watch type only
-          runTypeScriptCompileTypeOnly();
+          runStreamingTypeScriptCompileTypeOnly();
         } catch (error) {
           initProcessCatchErrorLogger('source-code', error, 'watch');
         }

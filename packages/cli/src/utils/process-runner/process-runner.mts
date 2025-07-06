@@ -70,8 +70,57 @@ function runStreamingCommand(command: string, args: string[]) {
     processManager.trackProcess(child);
 
     child.on('exit', (code) => process.exit(code ?? 1));
+
+    // NOTE: return isn't required, but it uses in combination with {runStreamingInSync} func
+    return child;
   } catch (error) {
     initProcessCatchErrorLogger('runStreamingCommand', error);
+  }
+}
+
+/**
+ * Runs a streaming command in sync mode.
+ * This is a placeholder function and does not execute any command.
+ * It is used to maintain compatibility with the existing code structure.
+ *
+ * Example: runStreamingInSync([{ runCommand: () => runStreamingCommand(), waitForOutput: 'compiled successfully' }]);
+ */
+async function runStreamingInSync(
+  streamings: {
+    runCommand: () => ReturnType<typeof runStreamingCommand>;
+    waitForOutput?: string;
+  }[],
+) {
+  for (const streaming of streamings) {
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise<void>((resolve, reject) => {
+      const child = streaming.runCommand();
+
+      if (!child) {
+        reject(
+          new Error(
+            '[mainset cli][runStreamingInSync] Previous command failed, aborting sequence.',
+          ),
+        );
+        return;
+      }
+
+      if (streaming.waitForOutput && child.stdout) {
+        child.stdout.on('data', (data) => {
+          const text = data.toString();
+          if (text.includes(streaming.waitForOutput!)) {
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+
+      child.on('error', reject);
+    }).catch((err) => {
+      // Stop further execution if a command fails
+      throw err;
+    });
   }
 }
 
@@ -79,4 +128,5 @@ export {
   execImmediateCommand,
   initProcessCatchErrorLogger,
   runStreamingCommand,
+  runStreamingInSync,
 };
