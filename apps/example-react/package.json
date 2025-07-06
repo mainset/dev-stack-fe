@@ -7,7 +7,8 @@
     "dev:csr": "cross-env NODE_ENV=development ms-cli web-app --exec serve --serveMode csr",
     "build": "ms-cli web-app --exec build",
     "build:csr": "ms-cli web-app --exec build --serveMode csr",
-    "serve:static": "ms-cli web-app --exec serve-static"
+    "serve": "ms-cli web-app --exec serve-static",
+    "serve:csr": "ms-cli web-app --exec serve-static --serveMode csr"
   },
   "dependencies": {
     "react": "^19.1.0",

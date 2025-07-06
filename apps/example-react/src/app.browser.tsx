@@ -1,5 +1,9 @@
 import React from 'react';
 
-const BrowserReactApp = <p>Example react app</p>;
+import * as styles from './app.module.scss';
+
+const BrowserReactApp = (
+  <p className={styles['app__hello-world']}>Hello World</p>
+);
 
 export default BrowserReactApp;
