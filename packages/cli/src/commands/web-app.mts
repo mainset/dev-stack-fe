@@ -11,12 +11,9 @@ import {
   execImmediateCommand,
   initProcessCatchErrorLogger,
   runStreamingCommand,
+  runStreamingInSync,
 } from '../utils/index.mjs';
-import {
-  execPurgeDist,
-  // execRslibCLICommand,
-  // runRslibCLICommand,
-} from './process-runner-chunks/index.mjs';
+import { execImmediatePurgeDist } from './process-runner-chunks/index.mjs';
 
 function registerWebAppCommand(program: Command) {
   program
@@ -86,7 +83,7 @@ function registerWebAppCommand(program: Command) {
             // ========== [Build] SSR mode ==========
 
             // Step 1: purge dist folder
-            execPurgeDist();
+            execImmediatePurgeDist();
 
             // Step 2: build:ssr-webapp source code
             console.log('\n📦 Compiling SSR WebApp with Webpack ...');
@@ -97,7 +94,7 @@ function registerWebAppCommand(program: Command) {
             /*
             // Step 3: build:ssr-server source code
             console.log('\n📦 Compiling SSR Server with Rslib ...');
-            execRslibCLICommand(`build --config ${rslibSSRConfigPath}`);
+            execImmediateRslibCLICommand(`build --config ${rslibSSRConfigPath}`);
             */
 
             console.log('\n✅ SSR Build completed successfully\n');
@@ -112,7 +109,7 @@ function registerWebAppCommand(program: Command) {
                   '@mainset/bundler-webpack/dist/esm/webpack-config/webapp.csr.config.mjs',
                 );
             // Step 1: purge dist folder
-            execPurgeDist();
+            execImmediatePurgeDist();
 
             // Step 2: build:csr-webapp source code
             console.log('\n📦 Compiling CSR WebApp with Webpack ...');
@@ -135,7 +132,7 @@ function registerWebAppCommand(program: Command) {
 
             /*
             // Step 1: watch:ssr-server start ssr server
-            runRslibCLICommand([
+            runStreamingRslibCLICommand([
               'build',
               '--config',
               rslibSSRConfigPath,
@@ -143,19 +140,28 @@ function registerWebAppCommand(program: Command) {
             ]);
             */
 
-            // Step 2: watch:ssr-webapp source code of web app
-            runStreamingCommand(webpackCLICommandPath, [
-              '--config',
-              webpackSSRConfigPath,
-              '--watch',
-            ]);
-
-            // Step 3: start:ssr-server which is compiled web app and ssr-server code
-            runStreamingCommand('node', [
-              '--watch', // Enable watch mode for {node}
-              ssrServerEntryPath,
-              '--ssrServerConfig',
-              ssrServerConfigCompiledPath,
+            // NOTE: node SSR server requires webpack to compile web app files first
+            runStreamingInSync([
+              // Step 2: watch:ssr-webapp source code of web app
+              {
+                runCommand: () =>
+                  runStreamingCommand(webpackCLICommandPath, [
+                    '--config',
+                    webpackSSRConfigPath,
+                    '--watch',
+                  ]),
+                waitForOutput: 'compiled successfully',
+              },
+              // Step 3: start:ssr-server which is compiled web app and ssr-server code
+              {
+                runCommand: () =>
+                  runStreamingCommand('node', [
+                    '--watch', // Enable watch mode for {node}
+                    ssrServerEntryPath,
+                    '--ssrServerConfig',
+                    ssrServerConfigCompiledPath,
+                  ]),
+              },
             ]);
           } else {
             // ========== [Serve] CSR mode ==========

@@ -13,16 +13,16 @@ function getRslibCLICommandPath() {
   return rslibCLICommandPath;
 }
 
-function execRslibCLICommand(command: string) {
+function execImmediateRslibCLICommand(command: string) {
   const rslibCLICommandPath = getRslibCLICommandPath();
 
   return execImmediateCommand(`${rslibCLICommandPath} ${command}`);
 }
 
-function runRslibCLICommand(commandParams: string[]) {
+function runStreamingRslibCLICommand(commandParams: string[]) {
   const rslibCLICommandPath = getRslibCLICommandPath();
 
   return runStreamingCommand(rslibCLICommandPath, [...commandParams]);
 }
 
-export { execRslibCLICommand, runRslibCLICommand };
+export { execImmediateRslibCLICommand, runStreamingRslibCLICommand };

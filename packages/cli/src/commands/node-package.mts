@@ -8,11 +8,11 @@ import {
   initProcessCatchErrorLogger,
 } from '../utils/index.mjs';
 import {
-  execPurgeDist,
-  execRslibCLICommand,
-  execTypeScriptCompileTypeOnly,
-  runRslibCLICommand,
-  runTypeScriptCompileTypeOnly,
+  execImmediatePurgeDist,
+  execImmediateRslibCLICommand,
+  execImmediateTypeScriptCompileTypeOnly,
+  runStreamingRslibCLICommand,
+  runStreamingTypeScriptCompileTypeOnly,
 } from './process-runner-chunks/index.mjs';
 
 function registerNodePackageCommand(program: Command) {
@@ -43,14 +43,14 @@ function registerNodePackageCommand(program: Command) {
 
         try {
           // Step 1: purge dist folder
-          execPurgeDist();
+          execImmediatePurgeDist();
 
           // Step 2: build source code
           console.log('\n📦 Compiling Source Code with Rslib ...');
-          execRslibCLICommand(`build --config ${rslibConfigPath}`);
+          execImmediateRslibCLICommand(`build --config ${rslibConfigPath}`);
 
           // Step 3: build type only
-          execTypeScriptCompileTypeOnly();
+          execImmediateTypeScriptCompileTypeOnly();
 
           console.log('\n✅ Build completed successfully\n');
         } catch (error) {
@@ -62,13 +62,18 @@ function registerNodePackageCommand(program: Command) {
 
         try {
           // Step 1: purge dist folder
-          execPurgeDist();
+          execImmediatePurgeDist();
 
           // Step 2: watch source code
-          runRslibCLICommand(['build', '--config', rslibConfigPath, '--watch']);
+          runStreamingRslibCLICommand([
+            'build',
+            '--config',
+            rslibConfigPath,
+            '--watch',
+          ]);
 
           // Step 3: watch type only
-          runTypeScriptCompileTypeOnly();
+          runStreamingTypeScriptCompileTypeOnly();
         } catch (error) {
           initProcessCatchErrorLogger('node-package', error, 'watch');
         }
