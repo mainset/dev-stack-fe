@@ -1,9 +1,10 @@
-import {
-  resolveHostPackageNodeModulesPath,
-  runtimePathById,
-} from '@mainset/cli/runtime';
+import { runtimePathById } from '@mainset/cli/runtime';
 
-import babelConfig from '../../babel.config.mjs';
+import {
+  BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
+  FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
+  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
+} from './module-rules/index.mjs';
 
 const commonWebpackConfigFragment = {
   output: {
@@ -11,27 +12,10 @@ const commonWebpackConfigFragment = {
   },
   module: {
     rules: [
+      BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
+      IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
       {
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: resolveHostPackageNodeModulesPath(
-            '@mainset/bundler-webpack',
-            'babel-loader',
-          ),
-          options: babelConfig,
-        },
-      },
-      {
-        test: /\.(svg|png)$/,
-        type: 'asset/resource',
-        generator: {
-          filename: '[name].[hash].[ext]',
-          outputPath: 'dist/assets/images',
-        },
-      },
-      {
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        ...FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         type: 'asset/resource',
         generator: {
           filename: '[name].[hash].[ext]',
