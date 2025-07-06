@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { runtimePathById } from './path.mjs';
 
@@ -25,7 +26,7 @@ function resolveHostPackageNodeModulesPath(
   // Otherwise, return just the package name (for packages installed from the registry)
   return isNodeModulesLinkedOrWorkspace
     ? hostPackageDependencyPackagePath
-    : dependencyPackageName;
+    : fileURLToPath(import.meta.resolve(dependencyPackageName));
 }
 
 function resolveHostPackageBinForCLICommandPath(
