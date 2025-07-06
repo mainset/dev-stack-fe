@@ -14,8 +14,8 @@ import {
 } from '../utils/index.mjs';
 import {
   execPurgeDist,
-  execRslibCLICommand,
-  runRslibCLICommand,
+  // execRslibCLICommand,
+  // runRslibCLICommand,
 } from './process-runner-chunks/index.mjs';
 
 function registerWebAppCommand(program: Command) {
@@ -68,12 +68,14 @@ function registerWebAppCommand(program: Command) {
             '@mainset/bundler-webpack/dist/esm/webpack-config/webapp.ssr.config.mjs',
           );
 
+      /*
       // Rslib paths
       const rslibSSRConfigPath = path.resolve(
         runtimePathById.root,
         'node_modules',
         '@mainset/builder-rslib/dist/esm/rslib.ssr-server.config.mjs',
       );
+      */
 
       if (options.exec === 'build') {
         // ========== Build mode ==========
@@ -92,9 +94,11 @@ function registerWebAppCommand(program: Command) {
               `${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
             );
 
+            /*
             // Step 3: build:ssr-server source code
             console.log('\n📦 Compiling SSR Server with Rslib ...');
             execRslibCLICommand(`build --config ${rslibSSRConfigPath}`);
+            */
 
             console.log('\n✅ SSR Build completed successfully\n');
           } else {
@@ -129,6 +133,7 @@ function registerWebAppCommand(program: Command) {
           if (options.serveMode === 'ssr') {
             // ========== [Serve] SSR mode ==========
 
+            /*
             // Step 1: watch:ssr-server start ssr server
             runRslibCLICommand([
               'build',
@@ -136,6 +141,7 @@ function registerWebAppCommand(program: Command) {
               rslibSSRConfigPath,
               '--watch',
             ]);
+            */
 
             // Step 2: watch:ssr-webapp source code of web app
             runStreamingCommand(webpackCLICommandPath, [
@@ -182,7 +188,7 @@ function registerWebAppCommand(program: Command) {
           if (options.serveMode === 'ssr') {
             // ========== [Serve Static] SSR mode ==========
 
-            // Step 3: start:ssr-server which is compiled web app and ssr-server code
+            // Step 1: start:ssr-server which is compiled web app and ssr-server code
             runStreamingCommand('node', [
               '--watch', // Enable watch mode for {node}
               ssrServerEntryPath,
