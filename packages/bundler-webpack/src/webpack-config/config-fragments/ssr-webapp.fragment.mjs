@@ -12,6 +12,7 @@ const ssrEntry = path.join(runtimePathById.src, 'index.ssr.ts');
 const bundlerEntry = fs.existsSync(ssrEntry) ? ssrEntry : defaultEntry;
 
 const ssrWebappWebpackConfigFragment = merge(
+  // NOTE: the Web App config used to compile entry point of {global.css} styles
   commonWebappWebpackConfigFragment,
   {
     entry: [bundlerEntry],

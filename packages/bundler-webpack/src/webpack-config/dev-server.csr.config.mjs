@@ -3,7 +3,7 @@ import { merge } from '@mainset/toolkit-js';
 
 import csrWebappEnvBasedConfig from './webapp.csr.config.mjs';
 
-const csrServerDevConfig = merge(csrWebappEnvBasedConfig, {
+const csrDevServerWebappEnvBasedConfig = merge(csrWebappEnvBasedConfig, {
   devtool: 'inline-source-map',
   devServer: {
     port: process.env.PORT || 3000,
@@ -15,4 +15,4 @@ const csrServerDevConfig = merge(csrWebappEnvBasedConfig, {
   },
 });
 
-export default csrServerDevConfig;
+export default csrDevServerWebappEnvBasedConfig;

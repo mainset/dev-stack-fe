@@ -6,6 +6,7 @@ import path from 'path';
 import { devWebpackConfigFragment } from './config-fragments/dev.fragment.mjs';
 import { prodWebpackConfigFragment } from './config-fragments/prod.fragment.mjs';
 import { ssrWebappWebpackConfigFragment } from './config-fragments/ssr-webapp.fragment.mjs';
+import ssrServerEnvBasedConfig from './server.ssr.config.mjs';
 
 const ssrWebappGeneralConfig = merge(ssrWebappWebpackConfigFragment, {
   plugins: [
@@ -27,4 +28,8 @@ const ssrWebappEnvBasedConfig = {
   ),
 };
 
-export default ssrWebappEnvBasedConfig[process.env.NODE_ENV];
+export default [
+  ssrServerEnvBasedConfig,
+  // NOTE: all Env Based configs declared outside {config-fragments} folder
+  ssrWebappEnvBasedConfig[process.env.NODE_ENV],
+];

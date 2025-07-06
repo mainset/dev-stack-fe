@@ -15,8 +15,12 @@
   "type": "module",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "src/@types"
   ],
+  "exports": {
+    "./global-types": "./src/@types/bundler.d.ts"
+  },
   "scripts": {
     "build": "ms-cli source-code --exec compile",
     "dev": "cross-env NODE_ENV=development ms-cli source-code --exec watch"
@@ -32,6 +36,7 @@
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
+    "null-loader": "^4.0.1",
     "postcss": "^8.5.6",
     "postcss-loader": "^8.1.1",
     "sass": "^1.89.2",

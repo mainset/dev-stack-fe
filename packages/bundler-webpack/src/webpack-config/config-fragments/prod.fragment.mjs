@@ -2,7 +2,12 @@ import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 
-import { cssStylesUseOptions } from './use-options/index.mjs';
+import {
+  CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
+  CSS_MODULES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
+  CSS_STYLES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
+  CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
+} from './module-rules/index.mjs';
 
 const prodWebpackConfigFragment = {
   mode: 'production',
@@ -27,21 +32,17 @@ const prodWebpackConfigFragment = {
   },
   module: {
     rules: [
-      // Pure CSS support without CSS Modules
       {
-        test: /\.(sa|sc|c)ss$/,
+        ...CSS_STYLES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         oneOf: [
           // CSS Modules
           {
-            test: /\.module\.(sa|sc|c)ss$/,
+            ...CSS_MODULES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
             use: [
               MiniCssExtractPlugin.loader,
               // NOTE: allow {css-loader} to transform CSS Modules to hashed class names
-              resolveHostPackageNodeModulesPath(
-                '@mainset/bundler-webpack',
-                'css-loader',
-              ),
-              ...cssStylesUseOptions,
+              CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
+              ...CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
             ],
           },
           // Pure CSS support without CSS Modules
@@ -54,7 +55,7 @@ const prodWebpackConfigFragment = {
                 '@mainset/bundler-webpack',
                 'css-loader',
               ),
-              ...cssStylesUseOptions,
+              ...CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
             ],
           },
         ],

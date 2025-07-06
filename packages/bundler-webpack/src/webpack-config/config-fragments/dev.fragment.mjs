@@ -1,6 +1,11 @@
 import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
 
-import { cssStylesUseOptions } from './use-options/index.mjs';
+import {
+  CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
+  CSS_MODULES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
+  CSS_STYLES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
+  CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
+} from './module-rules/index.mjs';
 
 const devWebpackConfigFragment = {
   mode: 'development',
@@ -11,11 +16,11 @@ const devWebpackConfigFragment = {
   module: {
     rules: [
       {
-        test: /\.(sa|sc|c)ss$/,
+        ...CSS_STYLES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         oneOf: [
           // CSS Modules
           {
-            test: /\.module\.(sa|sc|c)ss$/,
+            ...CSS_MODULES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
             use: [
               // NOTE: do NOT use {style-loader} in {production} mode
               // https://webpack.js.org/loaders/style-loader/#recommended
@@ -25,19 +30,8 @@ const devWebpackConfigFragment = {
               ),
               // NOTE: by default {css-loader} transforms CSS Modules to hashed class names
               // which is not development-friendly
-              {
-                loader: resolveHostPackageNodeModulesPath(
-                  '@mainset/bundler-webpack',
-                  'css-loader',
-                ),
-                options: {
-                  modules: {
-                    // hashed class names
-                    localIdentName: '[local]--[hash:base64:5]',
-                  },
-                },
-              },
-              ...cssStylesUseOptions,
+              CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
+              ...CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
             ],
           },
           // Pure CSS support without CSS Modules
@@ -53,7 +47,7 @@ const devWebpackConfigFragment = {
                 '@mainset/bundler-webpack',
                 'css-loader',
               ),
-              ...cssStylesUseOptions,
+              ...CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
             ],
           },
         ],
