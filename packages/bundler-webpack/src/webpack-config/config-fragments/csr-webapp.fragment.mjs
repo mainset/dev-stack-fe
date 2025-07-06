@@ -1,5 +1,6 @@
 import { runtimePathById } from '@mainset/cli/runtime';
 import { merge } from '@mainset/toolkit-js';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import fs from 'fs';
 import path from 'path';
 
@@ -15,6 +16,18 @@ const csrWebappWebpackConfigFragment = merge(
   commonWebappWebpackConfigFragment,
   {
     entry: [bundlerEntry],
+
+    plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.join(runtimePathById.root, 'public'),
+            to: path.join(runtimePathById.dist),
+            noErrorOnMissing: true, // optional: don't error if public doesn't exist
+          },
+        ],
+      }),
+    ],
   },
 );
 
