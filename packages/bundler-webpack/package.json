@@ -55,7 +55,7 @@
   },
   "peerDependencies": {
     "@mainset/cli": "^0.2.1",
-    "@mainset/dev-stack-fe": "^0.1.1",
+    "@mainset/dev-stack-fe": "^0.1.2",
     "@mainset/toolkit-js": "^0.1.0"
   }
 }
