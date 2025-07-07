@@ -28,13 +28,13 @@
     "./commitlint": "./src/commitlint.config.mjs"
   },
   "dependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.29.0",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "cross-env": "^7.0.3",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
@@ -42,12 +42,14 @@
     "eslint-plugin-prettier": "^5.5.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.2.0",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "typescript-eslint": "^8.34.1"
   },
   "peerDependencies": {
     "cross-env": "^7.0.3",
     "eslint": "^9.29.0",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3"
   }
 }
