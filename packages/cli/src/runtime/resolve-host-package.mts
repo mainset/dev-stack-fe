@@ -8,23 +8,14 @@ function resolveHostPackageNodeModulesPath(
   hostPackageName: string,
   dependencyPackageName: string,
 ) {
-  const hostPackageNodeModulesPath = path.resolve(
+  const hostPackageDependencyPackagePath = path.resolve(
     runtimePathById.root,
-    `node_modules/${hostPackageName}/node_modules`,
-  );
-
-  const hostPackageDependencyPackagePath = path.join(
-    hostPackageNodeModulesPath,
-    dependencyPackageName,
-  );
-
-  const isNodeModulesLinkedOrWorkspace = fs.existsSync(
-    hostPackageDependencyPackagePath,
+    `node_modules/${hostPackageName}/node_modules/${dependencyPackageName}`,
   );
 
   // If the package is linked or part of a workspace, return the full path
   // Otherwise, return just the package name (for packages installed from the registry)
-  return isNodeModulesLinkedOrWorkspace
+  return fs.existsSync(hostPackageDependencyPackagePath)
     ? hostPackageDependencyPackagePath
     : fileURLToPath(import.meta.resolve(dependencyPackageName));
 }
@@ -34,8 +25,8 @@ function resolveHostPackageBinForCLICommandPath(
   // dependencyPackageName: string,
   cliCommandName: string,
 ) {
-  /* Previous implementation
-  // Pnpm node_modules structure
+  /*
+  * ========== V1 implementation using pnpm node_modules structure ==========
   const dependencyPackageNodeModulesPath = resolveHostPackageNodeModulesPath(
     hostPackageName,
     dependencyPackageName,
@@ -53,21 +44,25 @@ function resolveHostPackageBinForCLICommandPath(
   return path.join(dependencyPackageNodeModulesPath, binPath);
   */
 
-  // installed from the registry
-  const dependencyPackageNodeModulesPath = path.resolve(
-    runtimePathById.root,
-    `node_modules/.bin/${cliCommandName}`,
-  );
-
-  // linked / workspace:^ package
-  const dependencyWorkspacePackageNodeModulesPath = path.resolve(
+  const hostPackageDependencyBinCLICommandPath = path.resolve(
     runtimePathById.root,
     `node_modules/${hostPackageName}/node_modules/.bin/${cliCommandName}`,
   );
 
-  return fs.existsSync(dependencyPackageNodeModulesPath)
-    ? dependencyPackageNodeModulesPath
-    : dependencyWorkspacePackageNodeModulesPath;
+  // Return the full path if the dependency is linked or part of a workspace (nested under the host package)
+  if (fs.existsSync(hostPackageDependencyBinCLICommandPath)) {
+    return fileURLToPath(
+      import.meta.resolve(hostPackageDependencyBinCLICommandPath),
+    );
+  }
+
+  // Otherwise, return the path to the dependency in the root node_modules (for registry-installed packages)
+  const dependencyBinCLICommandPath = path.resolve(
+    runtimePathById.root,
+    `node_modules/.bin/${cliCommandName}`,
+  );
+
+  return fileURLToPath(import.meta.resolve(dependencyBinCLICommandPath));
 }
 
 export {
