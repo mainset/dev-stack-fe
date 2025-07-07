@@ -1,9 +1,7 @@
-import path from 'path';
 import { fileURLToPath } from 'url';
 
-const trivagoPrettierPluginSortImports = path.join(
-  path.dirname(fileURLToPath(import.meta.url)), // __dirname
-  '../node_modules/@trivago/prettier-plugin-sort-imports/lib/src/index.js',
+const trivagoPrettierPluginSortImports = fileURLToPath(
+  import.meta.resolve('@trivago/prettier-plugin-sort-imports'),
 );
 
 const mainsetPrettierConfig = {
