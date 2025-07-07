@@ -32,6 +32,6 @@
     "@mainset/dev-stack-fe": "workspace:^"
   },
   "peerDependencies": {
-    "@mainset/dev-stack-fe": "^0.1.1"
+    "@mainset/dev-stack-fe": "^0.1.2"
   }
 }
