@@ -6,6 +6,7 @@ import path from 'path';
 import { devWebpackConfigFragment } from './config-fragments/dev.fragment.mjs';
 import { prodWebpackConfigFragment } from './config-fragments/prod.fragment.mjs';
 import { ssrWebappWebpackConfigFragment } from './config-fragments/ssr-webapp.fragment.mjs';
+import { HtmlPreloadCssWebpackPlugin } from './plugins/index.mjs';
 import ssrServerEnvBasedConfig from './server.ssr.config.mjs';
 
 const ssrWebappGeneralConfig = merge(ssrWebappWebpackConfigFragment, {
@@ -14,6 +15,7 @@ const ssrWebappGeneralConfig = merge(ssrWebappWebpackConfigFragment, {
       template: path.join(runtimePathById.src, 'index.template.html'),
       filename: 'server.html',
     }),
+    new HtmlPreloadCssWebpackPlugin(),
   ],
 });
 
