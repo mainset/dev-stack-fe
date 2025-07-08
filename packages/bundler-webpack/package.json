@@ -1,6 +1,6 @@
 {
   "name": "@mainset/bundler-webpack",
-  "version": "0.2.0",
+  "version": "0.2.1-rc.1",
   "description": "Bundler for web apps",
   "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/bundler-webpack",
   "bugs": {
