@@ -1,4 +1,5 @@
 import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
+import type { Configuration } from 'webpack';
 
 import {
   CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
@@ -7,7 +8,7 @@ import {
   CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
 } from './module-rules/index.mjs';
 
-const devWebpackConfigFragment = {
+const devWebpackConfigFragment: Configuration = {
   mode: 'development',
   output: {
     filename: 'js/[name].js',

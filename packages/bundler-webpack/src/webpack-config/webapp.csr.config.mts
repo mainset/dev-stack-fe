@@ -26,4 +26,5 @@ const csrWebappEnvBasedConfig = {
   ),
 };
 
-export default csrWebappEnvBasedConfig[process.env.NODE_ENV];
+// NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
+export default csrWebappEnvBasedConfig[process.env.NODE_ENV!];

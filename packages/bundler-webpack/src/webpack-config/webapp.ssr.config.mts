@@ -30,6 +30,7 @@ const ssrWebappEnvBasedConfig = {
 
 export default [
   ssrServerEnvBasedConfig,
+  // NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
   // NOTE: all Env Based configs declared outside {config-fragments} folder
-  ssrWebappEnvBasedConfig[process.env.NODE_ENV],
+  ssrWebappEnvBasedConfig[process.env.NODE_ENV!],
 ];

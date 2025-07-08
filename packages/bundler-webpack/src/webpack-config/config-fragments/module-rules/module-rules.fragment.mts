@@ -1,8 +1,11 @@
 import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
+import type { RuleSetRule } from 'webpack';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import babelConfig from '../../../babel.config.mjs';
 
-const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT = {
+const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
   test: /\.(ts|mts|tsx)$/,
   exclude: /node_modules/,
   use: {
@@ -14,7 +17,7 @@ const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT = {
   },
 };
 
-const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT = {
+const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
   test: /\.(svg|png)$/,
   type: 'asset/resource',
   generator: {
@@ -24,6 +27,6 @@ const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT = {
 };
 
 export {
-  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
   BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
+  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
 };

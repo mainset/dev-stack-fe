@@ -1,3 +1,4 @@
+import type { NodeEnv } from '@mainset/cli/runtime';
 import {
   NODE_ENV,
   resolveHostPackageNodeModulesPath,
@@ -5,6 +6,7 @@ import {
 } from '@mainset/cli/runtime';
 import { merge } from '@mainset/toolkit-js';
 import path from 'path';
+import type { Configuration } from 'webpack';
 
 import { commonWebpackConfigFragment } from './config-fragments/common.fragment.mjs';
 import {
@@ -28,7 +30,7 @@ const nullLoaderModuleRules = [
   ),
 }));
 
-const ssrServerCommonWebpackConfigFragment = {
+const ssrServerCommonWebpackConfigFragment: Configuration = {
   // common config
   resolve: commonWebpackConfigFragment.resolve,
 
@@ -71,7 +73,11 @@ const ssrServerCommonWebpackConfigFragment = {
   },
 };
 
-const generateSSRCssStylesRuleWebpackConfigFragment = ({ mode }) => {
+const generateSSRCssStylesRuleWebpackConfigFragment = ({
+  mode,
+}: {
+  mode: NodeEnv;
+}) => {
   const CSS_LOADER__RULE_USE_OPTIONS__BY_MODE = {
     [NODE_ENV.PRODUCTION]:
       CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
@@ -123,7 +129,7 @@ const generateSSRCssStylesRuleWebpackConfigFragment = ({ mode }) => {
   };
 };
 
-const ssrServerProdWebpackConfigFragment = {
+const ssrServerProdWebpackConfigFragment: Configuration = {
   mode: 'production',
 
   module: {
@@ -135,7 +141,7 @@ const ssrServerProdWebpackConfigFragment = {
   },
 };
 
-const ssrServerDevWebpackConfigFragment = {
+const ssrServerDevWebpackConfigFragment: Configuration = {
   mode: 'development',
 
   module: {
@@ -158,4 +164,5 @@ const ssrServerEnvBasedConfig = {
   ),
 };
 
-export default ssrServerEnvBasedConfig[process.env.NODE_ENV];
+// NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
+export default ssrServerEnvBasedConfig[process.env.NODE_ENV!];

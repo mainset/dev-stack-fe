@@ -1,4 +1,5 @@
 import { runtimePathById } from '@mainset/cli/runtime';
+import type { Configuration } from 'webpack';
 
 import {
   BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
@@ -6,7 +7,7 @@ import {
   IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
 } from './module-rules/index.mjs';
 
-const commonWebpackConfigFragment = {
+const commonWebpackConfigFragment: Configuration = {
   output: {
     path: runtimePathById.dist,
   },

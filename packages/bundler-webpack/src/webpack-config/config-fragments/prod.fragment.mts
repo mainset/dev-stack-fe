@@ -1,6 +1,7 @@
 import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
+import type { Configuration } from 'webpack';
 
 import {
   CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
@@ -9,7 +10,7 @@ import {
   CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
 } from './module-rules/index.mjs';
 
-const prodWebpackConfigFragment = {
+const prodWebpackConfigFragment: Configuration = {
   mode: 'production',
   output: {
     // - Use [contenthash] (or [chunkhash]) instead of [hash] for better long-term caching.

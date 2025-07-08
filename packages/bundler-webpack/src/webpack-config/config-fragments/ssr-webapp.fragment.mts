@@ -13,7 +13,7 @@ const ssrEntry = path.join(runtimePathById.src, 'index.ssr.ts');
 const bundlerEntry = fs.existsSync(ssrEntry) ? ssrEntry : defaultEntry;
 
 const ssrPublicOutputPath = path.join(
-  commonWebappWebpackConfigFragment.output.path,
+  commonWebappWebpackConfigFragment.output?.path || '',
   'public',
 );
 

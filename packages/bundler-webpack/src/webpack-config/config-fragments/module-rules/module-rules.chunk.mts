@@ -4,6 +4,7 @@ import {
 } from '@mainset/cli/runtime';
 import fs from 'fs';
 import path from 'path';
+import type { RuleSetRule } from 'webpack';
 
 // RegEx patterns for matching module rules in Webpack configuration
 const CSS_STYLES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK = {
@@ -19,14 +20,14 @@ const FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK = {
 };
 
 // Use options for CSS loader rule in Webpack configuration
-const CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK = {
+const CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK: RuleSetRule = {
   loader: resolveHostPackageNodeModulesPath(
     '@mainset/bundler-webpack',
     'css-loader',
   ),
 };
 
-const CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK = {
+const CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK: RuleSetRule = {
   loader: resolveHostPackageNodeModulesPath(
     '@mainset/bundler-webpack',
     'css-loader',
