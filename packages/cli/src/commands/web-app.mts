@@ -210,18 +210,25 @@ function registerWebAppCommand(program: Command) {
               '../services/serve-static/serve-static.mjs',
             );
 
-            const customServeStaticConfigPath = path.resolve(
+            const customServeStaticMjsConfigPath = path.resolve(
               runtimePathById.root,
-              options.config || './config/serve-static.config.json',
+              options.config || './config/serve-static.config.mjs',
             );
-            const serveStaticConfigPath = fs.existsSync(
-              customServeStaticConfigPath,
-            )
-              ? customServeStaticConfigPath
-              : path.resolve(
-                  runtimePathById.msCLISrc,
-                  '../services/express-base-app/express-base-app.config.json',
-                );
+
+            const customServeStaticJsonConfigPath = path.resolve(
+              runtimePathById.root,
+              './config/serve-static.config.json',
+            );
+
+            const serveStaticConfigPath =
+              (fs.existsSync(customServeStaticMjsConfigPath) &&
+                customServeStaticMjsConfigPath) ||
+              (fs.existsSync(customServeStaticJsonConfigPath) &&
+                customServeStaticJsonConfigPath) ||
+              path.resolve(
+                runtimePathById.msCLISrc,
+                '../services/express-base-app/express-base-app.config.json',
+              );
 
             // Step 2: serve static compiled files
             runStreamingCommand('node', [
