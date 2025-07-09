@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
 
+import { initDotenv } from '../dotenv-config.mjs';
 import {
   resolveHostPackageBinForCLICommandPath,
   runtimePathById,
@@ -35,6 +36,10 @@ function registerWebAppCommand(program: Command) {
       'ssr',
     )
     .action((options) => {
+      // !IMPORTANT: Load environment variables from .env file ONLY when we are compiling Web Applications
+      // as it logs {missing .env file} console error during {course-code} / {node-package} compilation
+      initDotenv();
+
       // Step 0: determinate command params
       const customWebpackConfigPath = path.resolve(
         runtimePathById.root,
