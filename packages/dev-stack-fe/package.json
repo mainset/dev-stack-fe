@@ -23,6 +23,7 @@
     "./tsconfig--type-only": "./src/typescript/tsconfig.type-only.json",
     "./tschunk--react": "./src/typescript/tsconfig.react.fragment.json",
     "./eslint": "./src/eslint/index.mjs",
+    "./stylelint": "./src/stylelint.config.mjs",
     "./prettier": "./src/prettier.config.mjs",
     "./lint-staged": "./src/lint-staged.config.mjs",
     "./commitlint": "./src/commitlint.config.mjs"
@@ -30,6 +31,8 @@
   "dependencies": {
     "@commitlint/config-conventional": "^19.8.1",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "stylelint-config-standard-scss": "^15.0.1",
+    "stylelint-declaration-strict-value": "^1.10.11",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
@@ -44,12 +47,14 @@
     "globals": "^16.2.0",
     "husky": "^9.1.7",
     "prettier": "^3.5.3",
+    "stylelint": "^16.21.1",
     "typescript-eslint": "^8.34.1"
   },
   "peerDependencies": {
     "cross-env": "^7.0.3",
     "eslint": "^9.29.0",
     "husky": "^9.1.7",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "stylelint": "^16.21.1"
   }
 }
