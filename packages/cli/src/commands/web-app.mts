@@ -93,7 +93,7 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:ssr-webapp source code
             console.log('\n📦 Compiling SSR WebApp with Webpack ...');
             execImmediateCommand(
-              `${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
+              `MS_CLI__WEBPACK_SERVE_MODE=ssr ${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
             );
 
             /*
@@ -119,7 +119,7 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:csr-webapp source code
             console.log('\n📦 Compiling CSR WebApp with Webpack ...');
             execImmediateCommand(
-              `${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
+              `MS_CLI__WEBPACK_SERVE_MODE=csr ${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
             );
 
             console.log('\n✅ CSR Build completed successfully\n');
@@ -150,11 +150,16 @@ function registerWebAppCommand(program: Command) {
               // Step 2: watch:ssr-webapp source code of web app
               {
                 runCommand: () =>
-                  runStreamingCommand(webpackCLICommandPath, [
-                    '--config',
-                    webpackSSRConfigPath,
-                    '--watch',
-                  ]),
+                  runStreamingCommand(
+                    webpackCLICommandPath,
+                    ['--config', webpackSSRConfigPath, '--watch'],
+                    {
+                      env: {
+                        ...process.env,
+                        MS_CLI__WEBPACK_SERVE_MODE: 'ssr',
+                      },
+                    },
+                  ),
                 waitForOutput: 'compiled successfully',
               },
               // Step 3: start:ssr-server which is compiled web app and ssr-server code
@@ -181,12 +186,16 @@ function registerWebAppCommand(program: Command) {
                 );
 
             // Step 1: watch:csr-server / start:csr-server source code
-            runStreamingCommand(webpackCLICommandPath, [
-              'serve',
-              '--config',
-              webpackDevServerConfigPath,
-              '--open',
-            ]);
+            runStreamingCommand(
+              webpackCLICommandPath,
+              ['serve', '--config', webpackDevServerConfigPath, '--open'],
+              {
+                env: {
+                  ...process.env,
+                  MS_CLI__WEBPACK_SERVE_MODE: 'csr',
+                },
+              },
+            );
           }
         } catch (error) {
           initProcessCatchErrorLogger('web-app', error, 'watch');

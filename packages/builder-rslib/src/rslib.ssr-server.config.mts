@@ -36,7 +36,7 @@ const ssrServerPresetRslib = defineConfig({
   source: {
     entry: {
       'ssr-server.config': [
-        path.join(runtimePathById.root, 'config', 'ssr-server.config.mts'),
+        path.join(runtimePathById.config, 'ssr-server.config.mts'),
       ],
     },
   },

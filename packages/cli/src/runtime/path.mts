@@ -10,7 +10,9 @@ const runtimePathById = {
   root,
 
   dist: path.join(root, 'dist'),
+  config: path.join(root, 'config'),
   src: path.join(root, 'src'),
+
   // Relative to file being executed
   msCLISrc: __dirname,
 };
