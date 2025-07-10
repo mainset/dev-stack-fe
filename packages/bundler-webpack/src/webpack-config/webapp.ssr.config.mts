@@ -17,7 +17,7 @@ const ssrWebappGeneralConfig = merge(ssrWebappWebpackConfigFragment, {
   ],
 });
 
-const ssrWebappEnvBasedConfig = {
+const ssrWebappConfigByNodeEnv = {
   [NODE_ENV.PRODUCTION]: merge(
     prodWebpackConfigFragment,
     ssrWebappGeneralConfig,
@@ -28,9 +28,14 @@ const ssrWebappEnvBasedConfig = {
   ),
 };
 
+// NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
+const ssrWebappEnvBasedConfig = ssrWebappConfigByNodeEnv[process.env.NODE_ENV!];
+
+// NOTE: the {tsc} stripping the export in favor of the default export
+export { ssrServerEnvBasedConfig, ssrWebappEnvBasedConfig };
+
 export default [
   ssrServerEnvBasedConfig,
-  // NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
   // NOTE: all Env Based configs declared outside {config-fragments} folder
-  ssrWebappEnvBasedConfig[process.env.NODE_ENV!],
+  ssrWebappEnvBasedConfig,
 ];
