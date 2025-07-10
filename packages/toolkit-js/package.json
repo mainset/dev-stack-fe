@@ -1,6 +1,6 @@
 {
   "name": "@mainset/toolkit-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Set of reusable JavaScript tools",
   "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/toolkit-js",
   "bugs": {
@@ -32,6 +32,6 @@
     "@mainset/dev-stack-fe": "workspace:^"
   },
   "peerDependencies": {
-    "@mainset/dev-stack-fe": "^0.1.2"
+    "@mainset/dev-stack-fe": "^0.2.0"
   }
 }
