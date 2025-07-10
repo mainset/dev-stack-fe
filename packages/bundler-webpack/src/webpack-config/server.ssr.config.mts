@@ -38,8 +38,7 @@ const ssrServerCommonWebpackConfigFragment: Configuration = {
   target: 'node',
   entry: {
     'ssr-server.config': path.join(
-      runtimePathById.root,
-      'config',
+      runtimePathById.config,
       'ssr-server.config.mts',
     ),
   },
