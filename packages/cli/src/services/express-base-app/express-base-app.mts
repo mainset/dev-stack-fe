@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
+import type { Options } from 'http-proxy-middleware';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import path from 'path';
-
-// Import type { Options } from 'http-proxy-middleware';
 
 import { runtimePathById } from '../../runtime/index.mjs';
 import defaultExpressConfig from './express-base-app.config.json' with { type: 'json' };
@@ -14,7 +14,7 @@ interface ServeStaticConfig {
 interface ExpressBaseAppConfig {
   listenPort?: number;
   serveStatics?: ServeStaticConfig[];
-  // ProxyConfigByPath?: Record<string, Options>[];
+  proxyConfigByPath?: Record<string, Options>;
 }
 
 class ExpressBaseApp {
@@ -25,8 +25,11 @@ class ExpressBaseApp {
 
   // ========== Constructor ==========
   constructor(customExpressConfig: Partial<ExpressBaseAppConfig> = {}) {
-    const { listenPort = defaultExpressConfig.listenPort, serveStatics } =
-      customExpressConfig;
+    const {
+      listenPort = defaultExpressConfig.listenPort,
+      serveStatics = defaultExpressConfig.serveStatics,
+      proxyConfigByPath,
+    } = customExpressConfig;
 
     this.listenPort = listenPort;
 
@@ -34,6 +37,10 @@ class ExpressBaseApp {
 
     this.appUseStatic({
       serveStatics,
+    });
+
+    this.appUseProxyMiddleware({
+      proxyConfigByPath,
     });
 
     this.startListening = this.startListening.bind(this);
@@ -56,11 +63,16 @@ class ExpressBaseApp {
     });
   }
 
-  // Private appUseProxy() {
-  //   app.use('/api', createProxyMiddleware(proxyConfig['/api/']));
-  //   app.use('/api-local', createProxyMiddleware(proxyConfig['/api-local/']));
-  //   app.use('/api-boilerplate', createProxyMiddleware(proxyConfig['/api-boilerplate/']));
-  // }
+  private appUseProxyMiddleware({
+    proxyConfigByPath = {},
+  }: Pick<ExpressBaseAppConfig, 'proxyConfigByPath'>) {
+    Object.keys(proxyConfigByPath)?.forEach((proxyPath) => {
+      this.app.use(
+        proxyPath,
+        createProxyMiddleware(proxyConfigByPath[proxyPath]),
+      );
+    });
+  }
 
   // ========== Public ==========
   public startListening() {

@@ -15,7 +15,7 @@ const csrWebappGeneralConfig = merge(csrWebappWebpackConfigFragment, {
   ],
 });
 
-const csrWebappEnvBasedConfig = {
+const csrWebappConfigByNodeEnv = {
   [NODE_ENV.PRODUCTION]: merge(
     prodWebpackConfigFragment,
     csrWebappGeneralConfig,
@@ -26,5 +26,7 @@ const csrWebappEnvBasedConfig = {
   ),
 };
 
+const csrWebappEnvBasedConfig = csrWebappConfigByNodeEnv[process.env.NODE_ENV!];
+
 // NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
-export default csrWebappEnvBasedConfig[process.env.NODE_ENV!];
+export default csrWebappEnvBasedConfig;

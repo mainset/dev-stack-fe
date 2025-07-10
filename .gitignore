@@ -7,5 +7,7 @@ node_modules
 # architecture base structure
 dist
 
-# files
+# secrets
 .npmrc
+.env*
+!.env.example

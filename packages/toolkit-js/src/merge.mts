@@ -5,7 +5,7 @@ interface MergeOptions {
 function merge<T extends object>(
   obj1: T,
   obj2: T,
-  options: MergeOptions = { isSourceObjMutated: true },
+  options: MergeOptions = { isSourceObjMutated: false },
 ) {
   const result = options.isSourceObjMutated ? obj1 : { ...obj1 };
 

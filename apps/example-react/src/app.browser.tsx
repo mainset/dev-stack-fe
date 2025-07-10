@@ -1,9 +1,7 @@
 import React from 'react';
 
-import * as styles from './app.module.scss';
+import { HomePage } from './pages';
 
-const BrowserReactApp = (
-  <p className={styles['app__hello-world']}>Hello World</p>
-);
+const BrowserReactApp = <HomePage />;
 
 export default BrowserReactApp;

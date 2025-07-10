@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
 
+import { initDotenv } from '../dotenv-config.mjs';
 import {
   resolveHostPackageBinForCLICommandPath,
   runtimePathById,
@@ -35,6 +36,10 @@ function registerWebAppCommand(program: Command) {
       'ssr',
     )
     .action((options) => {
+      // !IMPORTANT: Load environment variables from .env file ONLY when we are compiling Web Applications
+      // as it logs {missing .env file} console error during {course-code} / {node-package} compilation
+      initDotenv();
+
       // Step 0: determinate command params
       const customWebpackConfigPath = path.resolve(
         runtimePathById.root,
@@ -88,7 +93,7 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:ssr-webapp source code
             console.log('\n📦 Compiling SSR WebApp with Webpack ...');
             execImmediateCommand(
-              `${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
+              `MS_CLI__WEBPACK_SERVE_MODE=ssr ${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
             );
 
             /*
@@ -114,7 +119,7 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:csr-webapp source code
             console.log('\n📦 Compiling CSR WebApp with Webpack ...');
             execImmediateCommand(
-              `${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
+              `MS_CLI__WEBPACK_SERVE_MODE=csr ${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
             );
 
             console.log('\n✅ CSR Build completed successfully\n');
@@ -145,11 +150,16 @@ function registerWebAppCommand(program: Command) {
               // Step 2: watch:ssr-webapp source code of web app
               {
                 runCommand: () =>
-                  runStreamingCommand(webpackCLICommandPath, [
-                    '--config',
-                    webpackSSRConfigPath,
-                    '--watch',
-                  ]),
+                  runStreamingCommand(
+                    webpackCLICommandPath,
+                    ['--config', webpackSSRConfigPath, '--watch'],
+                    {
+                      env: {
+                        ...process.env,
+                        MS_CLI__WEBPACK_SERVE_MODE: 'ssr',
+                      },
+                    },
+                  ),
                 waitForOutput: 'compiled successfully',
               },
               // Step 3: start:ssr-server which is compiled web app and ssr-server code
@@ -176,12 +186,16 @@ function registerWebAppCommand(program: Command) {
                 );
 
             // Step 1: watch:csr-server / start:csr-server source code
-            runStreamingCommand(webpackCLICommandPath, [
-              'serve',
-              '--config',
-              webpackDevServerConfigPath,
-              '--open',
-            ]);
+            runStreamingCommand(
+              webpackCLICommandPath,
+              ['serve', '--config', webpackDevServerConfigPath, '--open'],
+              {
+                env: {
+                  ...process.env,
+                  MS_CLI__WEBPACK_SERVE_MODE: 'csr',
+                },
+              },
+            );
           }
         } catch (error) {
           initProcessCatchErrorLogger('web-app', error, 'watch');
@@ -210,18 +224,25 @@ function registerWebAppCommand(program: Command) {
               '../services/serve-static/serve-static.mjs',
             );
 
-            const customServeStaticConfigPath = path.resolve(
+            const customServeStaticMjsConfigPath = path.resolve(
               runtimePathById.root,
-              options.config || './config/serve-static.config.json',
+              options.config || './config/serve-static.config.mjs',
             );
-            const serveStaticConfigPath = fs.existsSync(
-              customServeStaticConfigPath,
-            )
-              ? customServeStaticConfigPath
-              : path.resolve(
-                  runtimePathById.msCLISrc,
-                  '../services/express-base-app/express-base-app.config.json',
-                );
+
+            const customServeStaticJsonConfigPath = path.resolve(
+              runtimePathById.root,
+              './config/serve-static.config.json',
+            );
+
+            const serveStaticConfigPath =
+              (fs.existsSync(customServeStaticMjsConfigPath) &&
+                customServeStaticMjsConfigPath) ||
+              (fs.existsSync(customServeStaticJsonConfigPath) &&
+                customServeStaticJsonConfigPath) ||
+              path.resolve(
+                runtimePathById.msCLISrc,
+                '../services/express-base-app/express-base-app.config.json',
+              );
 
             // Step 2: serve static compiled files
             runStreamingCommand('node', [
