@@ -5,6 +5,9 @@ import path from 'path';
 import ReactDOMServer from 'react-dom/server';
 
 import provideServerReactApp from '../src/app.server';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import proxyConfigByPath from './proxy.config.mjs';
 
 const ssrServerConfig: SSRConfigParams = {
   serveStatics: [
@@ -12,9 +15,9 @@ const ssrServerConfig: SSRConfigParams = {
       rootPath: path.join(runtimePathById.dist, 'public'),
     },
   ],
+  proxyConfigByPath,
   renderSSRContentByPath: {
-    // App.get('/{*any}')
-    '/': ({ reqUrl, fullUrl }) =>
+    '/{*any}': ({ reqUrl, fullUrl }) =>
       new Promise((resolve, reject) => {
         fs.readFile(
           path.join(runtimePathById.dist, 'public', 'server.html'),

@@ -3,6 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist/esm",
     // NOTE: remove when webpack config will be migrated to TS
-    "allowJs": true
+    "allowJs": true,
+    // TODO: review possibility to move into {common} config
+    "target": "es2017"
   }
 }
