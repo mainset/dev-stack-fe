@@ -1,3 +1,4 @@
+import type { SpawnOptions } from 'child_process';
 import { execSync, spawn } from 'child_process';
 
 import { consoleColorize } from '../index.mjs';
@@ -56,11 +57,16 @@ function execImmediateCommand(fullCommandString: string) {
  *
  * Example: runStreamingCommand('rspack', ['serve', '--config', './config/rspack.config.ts']);
  */
-function runStreamingCommand(command: string, args: string[]) {
+function runStreamingCommand(
+  command: string,
+  args: string[],
+  options: SpawnOptions = {},
+) {
   try {
     const child = spawn(command, args, {
       stdio: 'inherit',
       shell: true,
+      ...options,
     });
 
     // Track the process using ProcessManager as it could live in the background after crashing
