@@ -19,6 +19,10 @@
     "src/@types"
   ],
   "exports": {
+    ".": {
+      "types": "./dist/types/index.d.mts",
+      "import": "./dist/esm/index.mjs"
+    },
     "./global-types": "./src/@types/bundler.d.ts"
   },
   "scripts": {

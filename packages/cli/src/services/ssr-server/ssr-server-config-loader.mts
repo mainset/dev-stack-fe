@@ -1,17 +1,14 @@
-import { Command } from 'commander';
-
+import { parseCliOptions } from '../../runtime/index.mjs';
 import type { ExpressBaseAppConfig } from '../express-base-app/index.mjs';
 
 // Step-1: parse CLI arguments
-const options = new Command()
-  .option(
-    '--ssrServerConfig <path>',
-    'Path to ./config/ssr-server.config.mts config file',
-  )
-  .allowUnknownOption() // Bypass {error: unknown option '--config'}
-  .allowExcessArguments() // Bypass {error: too many arguments. Expected 0 arguments but got 2.}
-  .parse(process.argv)
-  .opts();
+
+const options = parseCliOptions([
+  {
+    commanderFlags: '--ssrServerConfig <path>',
+    description: 'Path to ./config/ssr-server.config.mts config file',
+  },
+]);
 
 interface SSRConfigParams extends Partial<ExpressBaseAppConfig> {
   renderSSRContentByPath: Record<

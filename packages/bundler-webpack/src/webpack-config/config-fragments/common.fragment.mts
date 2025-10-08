@@ -26,7 +26,7 @@ const commonWebpackConfigFragment: Configuration = {
     ],
   },
   resolve: {
-    modules: [runtimePathById.root, 'node_modules'],
+    modules: ['node_modules'],
     extensions: [
       // Default for {extensions} key: https://webpack.js.org/configuration/resolve/#resolveloader
       '.js',

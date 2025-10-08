@@ -44,8 +44,7 @@ const CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK: RuleSetRule = {
 
 // Use options for CSS styles rule in Webpack configuration
 const postcssConfigPath = path.join(
-  runtimePathById.root,
-  'config',
+  runtimePathById.config,
   'postcss.config.cjs',
 );
 
