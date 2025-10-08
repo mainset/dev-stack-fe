@@ -15,7 +15,7 @@ const generateEnvBasedWebpackConfig = (
   switch (msCliWebpackServeMode) {
     case 'ssr':
       return [
-        ssrServerEnvBasedConfig,
+        merge(ssrServerEnvBasedConfig, extendedWebpackConfig),
         merge(ssrWebappEnvBasedConfig, extendedWebpackConfig),
       ];
     case 'csr':
