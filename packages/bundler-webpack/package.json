@@ -1,6 +1,6 @@
 {
   "name": "@mainset/bundler-webpack",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Bundler for web apps",
   "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/bundler-webpack",
   "bugs": {
@@ -58,8 +58,8 @@
     "@mainset/toolkit-js": "workspace:^"
   },
   "peerDependencies": {
-    "@mainset/cli": "^0.2.1",
-    "@mainset/dev-stack-fe": "^0.1.2",
-    "@mainset/toolkit-js": "^0.1.0"
+    "@mainset/cli": "^0.3.0",
+    "@mainset/dev-stack-fe": "^0.2.0",
+    "@mainset/toolkit-js": "^0.1.1"
   }
 }
