@@ -38,11 +38,11 @@
     "purge:dist": "rm -rf ./dist"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.47.2",
-    "@types/node": "^24.0.3",
-    "commander": "^14.0.0",
+    "@dotenvx/dotenvx": "^1.51.0",
+    "@types/node": "^24.7.0",
+    "commander": "^14.0.1",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.1.0",
     "express": "^5.1.0",
     "http-proxy-middleware": "^3.0.5"
   },
@@ -50,7 +50,7 @@
     "@mainset/dev-stack-fe": "workspace:^",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.3"
+    "@types/node": "^24.7.0"
   },
   "peerDependencies": {
     "@mainset/dev-stack-fe": "^0.1.2"

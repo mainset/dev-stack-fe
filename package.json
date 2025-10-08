@@ -22,10 +22,10 @@
     "s:i": "npm run setup:initial"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
-    "eslint": "^9.29.0",
-    "prettier": "^3.5.3",
-    "stylelint": "^16.21.1"
+    "cross-env": "^10.1.0",
+    "eslint": "^9.37.0",
+    "prettier": "^3.6.2",
+    "stylelint": "^16.25.0"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.18.1"
 }

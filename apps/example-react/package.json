@@ -11,15 +11,15 @@
     "serve:csr": "ms-cli web-app --exec serve-static --serveMode csr"
   },
   "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@mainset/builder-rslib": "workspace:^",
     "@mainset/bundler-webpack": "workspace:^",
     "@mainset/cli": "workspace:^",
     "@mainset/dev-stack-fe": "workspace:^",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6"
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1"
   }
 }
