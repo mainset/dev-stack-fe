@@ -1,11 +1,12 @@
+import fs from 'fs';
+
 import { runtimePathById } from '../../runtime/index.mjs';
-import { execImmediateCommand } from '../../utils/index.mjs';
 
 // Cleanup
 function execImmediatePurgeDist() {
   console.log('🧹 Cleaning dist folder ...');
 
-  execImmediateCommand(`rm -rf ${runtimePathById.dist}`);
+  fs.rmSync(runtimePathById.dist, { recursive: true, force: true });
 }
 
 export { execImmediatePurgeDist };
