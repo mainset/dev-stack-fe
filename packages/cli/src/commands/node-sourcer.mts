@@ -15,10 +15,10 @@ import {
   runStreamingTypeScriptCompileTypeOnly,
 } from './process-runner-chunks/index.mjs';
 
-function registerNodePackageCommand(program: Command) {
+function registerNodeSourcerCommand(program: Command) {
   program
-    .command('node-package')
-    .description('Run node package build or watch using Rslib')
+    .command('node-sourcer')
+    .description('Run node-sourcer build or watch using Rslib')
     .requiredOption('-e, --exec <type>', 'Execution mode: build or watch')
     // .option('-b, --builder <builder>', 'Builder tool (default: rslib)', 'rslib')
     .option('-c, --config <path>', 'Path to config file', './rslib.config.mts')
@@ -34,12 +34,12 @@ function registerNodePackageCommand(program: Command) {
             runtimePathById.root,
             // NOTE: possibility to check if package is installed, otherwise throw error
             'node_modules',
-            '@mainset/builder-rslib/dist/esm/rslib.node-package.config.mjs',
+            '@mainset/builder-rslib/dist/esm/rslib.node-sourcer.config.mjs',
           );
 
       if (options.exec === 'build') {
         // ========== Build mode ==========
-        console.log('\n🏗️  [mainset cli] node-package: build');
+        console.log('\n🏗️  [mainset cli] node-sourcer: build');
 
         try {
           // Step 1: purge dist folder
@@ -54,11 +54,11 @@ function registerNodePackageCommand(program: Command) {
 
           console.log('\n✅ Build completed successfully\n');
         } catch (error) {
-          initProcessCatchErrorLogger('node-package', error, 'build');
+          initProcessCatchErrorLogger('node-sourcer', error, 'build');
         }
       } else if (options.exec === 'watch') {
         // ========== Watch mode ==========
-        console.log('\n🏗️  [mainset cli] node-package: watch');
+        console.log('\n🏗️  [mainset cli] node-sourcer: watch');
 
         try {
           // Step 1: purge dist folder
@@ -75,13 +75,13 @@ function registerNodePackageCommand(program: Command) {
           // Step 3: watch type only
           runStreamingTypeScriptCompileTypeOnly();
         } catch (error) {
-          initProcessCatchErrorLogger('node-package', error, 'watch');
+          initProcessCatchErrorLogger('node-sourcer', error, 'watch');
         }
       } else {
         console.error(
           consoleColorize(
             'BRIGHT_YELLOW',
-            `[mainset cli][node-package] Unknown exec mode: "${options.exec}"`,
+            `[mainset cli][node-sourcer] Unknown exec mode: "${options.exec}"`,
           ),
         );
         process.exit(1);
@@ -89,4 +89,4 @@ function registerNodePackageCommand(program: Command) {
     });
 }
 
-export { registerNodePackageCommand };
+export { registerNodeSourcerCommand };

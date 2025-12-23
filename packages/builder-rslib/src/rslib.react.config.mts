@@ -3,10 +3,10 @@ import { merge } from '@mainset/toolkit-js';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginSass } from '@rsbuild/plugin-sass';
 
-import { nodePackageCommonPresetRslib } from './rslib.node-package.config.mjs';
+import { webPackageCommonPresetRslib } from './rslib.web-package.config.mjs';
 import { initRslibConfigGenerator } from './utils.mjs';
 
-const reactCommonPresetRslib = merge(nodePackageCommonPresetRslib, {
+const reactCommonPresetRslib = merge(webPackageCommonPresetRslib, {
   lib: [],
   plugins: [pluginReact(), pluginSass()],
 });

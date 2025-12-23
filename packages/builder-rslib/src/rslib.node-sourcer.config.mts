@@ -8,7 +8,7 @@ import { initRslibConfigGenerator } from './utils.mjs';
 // NOTE: there is no sense in minimizing {*.min.js} / {*.min.css} output files in node package
 // during development debugging complete JS code / full CSS class gives a better dev experience
 // the bundler of the final web app should be responsible for the minification of the final output files
-const nodePackageCommonPresetRslib = defineConfig({
+const nodeSourcerCommonPresetRslib = defineConfig({
   mode: process.env.NODE_ENV || NODE_ENV.PRODUCTION,
   lib: [
     {
@@ -19,6 +19,13 @@ const nodePackageCommonPresetRslib = defineConfig({
           js: 'esm/index.mjs',
         },
       },
+      autoExternal: {
+        // NOTE: bundle source of node_modules from dependencies into the lib build
+        dependencies: false,
+        devDependencies: true,
+        peerDependencies: true,
+        optionalDependencies: true,
+      },
     },
     {
       format: 'cjs',
@@ -28,6 +35,13 @@ const nodePackageCommonPresetRslib = defineConfig({
           js: 'cjs/index.cjs',
         },
       },
+      autoExternal: {
+        // NOTE: bundle source of of node_modules from dependencies into the lib build
+        dependencies: false,
+        devDependencies: true,
+        peerDependencies: true,
+        optionalDependencies: true,
+      },
     },
   ],
   source: {
@@ -36,34 +50,18 @@ const nodePackageCommonPresetRslib = defineConfig({
     },
   },
   output: {
-    target: 'web',
+    target: 'node',
     distPath: {
       root: runtimePathById.dist,
-    },
-    filename: {
-      css: `css/main.css`,
-    },
-    // CssModules: {
-    //   localIdentName: '[local]--[hash:base64:6]',
-    // },
-    // https://rsbuild.dev/config/output/source-map#default-behavior
-    // sourceMap: true,
-  },
-  tools: {
-    cssLoader: {
-      modules: {
-        // Support CSS Modules syntax as {import styles from './styles.module.css'}
-        namedExport: true,
-      },
     },
   },
 });
 
-const generateNodePackageRslibConfig = initRslibConfigGenerator(
-  nodePackageCommonPresetRslib,
+const generateNodeSourcerRslibConfig = initRslibConfigGenerator(
+  nodeSourcerCommonPresetRslib,
 );
 
-export { generateNodePackageRslibConfig, nodePackageCommonPresetRslib };
+export { generateNodeSourcerRslibConfig, nodeSourcerCommonPresetRslib };
 
 // NOTE: the default export is used to point config file in {mainset-cli}
-export default nodePackageCommonPresetRslib;
+export default nodeSourcerCommonPresetRslib;
