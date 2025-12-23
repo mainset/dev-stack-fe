@@ -1,6 +1,6 @@
 {
   "name": "@mainset/cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A unified CLI tool for accelerating development, based on mainset vision of front-end infrastructure",
   "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/cli",
   "bugs": {
