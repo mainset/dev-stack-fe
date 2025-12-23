@@ -51,6 +51,7 @@ function resolveHostPackageBinForCLICommandPath(
 
   // Return the full path if the dependency is linked or part of a workspace (nested under the host package)
   if (fs.existsSync(hostPackageDependencyBinCLICommandPath)) {
+    // !IMPORTANT: required for development mode in pnpm workspaces with symlinks {dev-stack-fe} project compilation
     return fileURLToPath(
       import.meta.resolve(hostPackageDependencyBinCLICommandPath),
     );
@@ -62,7 +63,8 @@ function resolveHostPackageBinForCLICommandPath(
     `node_modules/.bin/${cliCommandName}`,
   );
 
-  return fileURLToPath(import.meta.resolve(dependencyBinCLICommandPath));
+  // return fileURLToPath(import.meta.resolve(dependencyBinCLICommandPath));
+  return dependencyBinCLICommandPath;
 }
 
 export {
