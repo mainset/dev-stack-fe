@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 
 import {
-  registerNodePackageCommand,
+  registerNodeSourcerCommand,
   registerSourceCodeCommand,
   registerWebAppCommand,
 } from './commands/index.mjs';
@@ -19,7 +19,7 @@ program
   .version('0.1.0');
 
 registerSourceCodeCommand(program);
-registerNodePackageCommand(program);
+registerNodeSourcerCommand(program);
 registerWebAppCommand(program);
 
 program.parse(process.argv);

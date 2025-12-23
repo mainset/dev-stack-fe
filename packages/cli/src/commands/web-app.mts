@@ -37,7 +37,7 @@ function registerWebAppCommand(program: Command) {
     )
     .action((options) => {
       // !IMPORTANT: Load environment variables from .env file ONLY when we are compiling Web Applications
-      // as it logs {missing .env file} console error during {course-code} / {node-package} compilation
+      // as it logs {missing .env file} console error during {source-code} / {node-sourcer} compilation
       initDotenv();
 
       // Step 0: determinate command params

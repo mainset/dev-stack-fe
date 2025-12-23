@@ -5,7 +5,7 @@ function initDotenv() {
   return dotenv.config();
 }
 
-// REVIEW: investigate if {.env} file need's to be loaded during {course-code} / {node-package} compilation
+// REVIEW: investigate if {.env} file need's to be loaded during {source-code} / {node-sourcer} compilation
 // Auto-execute configuration
 // initDotenv();
 
