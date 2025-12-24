@@ -51,10 +51,10 @@ function resolveHostPackageBinForCLICommandPath(
 
   // Return the full path if the dependency is linked or part of a workspace (nested under the host package)
   if (fs.existsSync(hostPackageDependencyBinCLICommandPath)) {
-    // !IMPORTANT: required for development mode in pnpm workspaces with symlinks {dev-stack-fe} project compilation
-    return fileURLToPath(
-      import.meta.resolve(hostPackageDependencyBinCLICommandPath),
-    );
+    // return fileURLToPath(
+    //   import.meta.resolve(hostPackageDependencyBinCLICommandPath),
+    // );
+    return fs.realpathSync(hostPackageDependencyBinCLICommandPath);
   }
 
   // Otherwise, return the path to the dependency in the root node_modules (for registry-installed packages)
@@ -64,7 +64,7 @@ function resolveHostPackageBinForCLICommandPath(
   );
 
   // return fileURLToPath(import.meta.resolve(dependencyBinCLICommandPath));
-  return dependencyBinCLICommandPath;
+  return fs.realpathSync(dependencyBinCLICommandPath);
 }
 
 export {
