@@ -93,7 +93,12 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:ssr-webapp source code
             console.log('\n📦 Compiling SSR WebApp with Webpack ...');
             execImmediateCommand(
-              `MS_CLI__WEBPACK_SERVE_MODE=ssr ${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
+              `${webpackCLICommandPath} --config ${webpackSSRConfigPath}`,
+              {
+                env: {
+                  MS_CLI__WEBPACK_SERVE_MODE: 'ssr',
+                },
+              },
             );
 
             /*
@@ -119,7 +124,12 @@ function registerWebAppCommand(program: Command) {
             // Step 2: build:csr-webapp source code
             console.log('\n📦 Compiling CSR WebApp with Webpack ...');
             execImmediateCommand(
-              `MS_CLI__WEBPACK_SERVE_MODE=csr ${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
+              `${webpackCLICommandPath} --config ${webpackCSRConfigPath}`,
+              {
+                env: {
+                  MS_CLI__WEBPACK_SERVE_MODE: 'csr',
+                },
+              },
             );
 
             console.log('\n✅ CSR Build completed successfully\n');
@@ -155,7 +165,6 @@ function registerWebAppCommand(program: Command) {
                     ['--config', webpackSSRConfigPath, '--watch'],
                     {
                       env: {
-                        ...process.env,
                         MS_CLI__WEBPACK_SERVE_MODE: 'ssr',
                       },
                     },
@@ -191,7 +200,6 @@ function registerWebAppCommand(program: Command) {
               ['serve', '--config', webpackDevServerConfigPath, '--open'],
               {
                 env: {
-                  ...process.env,
                   MS_CLI__WEBPACK_SERVE_MODE: 'csr',
                 },
               },
