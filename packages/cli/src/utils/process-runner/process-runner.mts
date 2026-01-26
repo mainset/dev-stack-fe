@@ -1,4 +1,4 @@
-import type { SpawnOptions } from 'child_process';
+import type { ExecSyncOptions, SpawnOptions } from 'child_process';
 import { execSync, spawn } from 'child_process';
 
 import { consoleColorize } from '../index.mjs';
@@ -43,9 +43,21 @@ function initProcessCatchErrorLogger(
  *
  * Example: execImmediateCommand('rspack --config ./config/rspack.config.ts');
  */
-function execImmediateCommand(fullCommandString: string) {
+function execImmediateCommand(
+  fullCommandString: string,
+  options: ExecSyncOptions = {},
+) {
   try {
-    execSync(fullCommandString, { stdio: 'inherit' });
+    const { env, ...restExecSyncOptions } = options;
+
+    execSync(fullCommandString, {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        ...env,
+      },
+      ...restExecSyncOptions,
+    });
   } catch (error) {
     initProcessCatchErrorLogger('execImmediateCommand', error);
   }
@@ -63,10 +75,16 @@ function runStreamingCommand(
   options: SpawnOptions = {},
 ) {
   try {
+    const { env, ...restSpawnOptions } = options;
+
     const child = spawn(command, args, {
       stdio: 'inherit',
       shell: true,
-      ...options,
+      env: {
+        ...process.env,
+        ...env,
+      },
+      ...restSpawnOptions,
     });
 
     // Track the process using ProcessManager as it could live in the background after crashing
