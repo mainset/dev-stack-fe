@@ -1,0 +1,59 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  web-app--react:
+    build:
+      context: .
+      target: production
+    # NOTE: start production service by default without {--profile} flag
+    profiles: [prod]
+    env_file:
+      - ./.env
+    ports:
+      - 8080:8080
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.web-app--react.rule=Host(`react-boilerplate.mainset.${DEV__DOMAIN_LOCALHOST:-localhost}`)'
+      - 'traefik.http.services.web-app--react.loadbalancer.server.port=8080'
+    networks:
+      - network--dev
+  web-app--react-dev:
+    extends: web-app--react
+    build:
+      target: development
+    env_file:
+      - ./.env.development
+    volumes:
+      # Bind Mount code for Live Update
+      - ./src:/usr/src/web-app--react/src
+      # !IMPORTANT: ensure that the volume mounting does not overwrite any of the {node_modules} directory
+      - /usr/src/web-app--react/node_modules
+      # !IMPORTANT: ensure that the volume mounting does not overwrite any of the {dist} static directory
+      - /usr/src/web-app--react/dist
+    profiles: [dev]
+
+  # development service
+  # make the service available under custom domain on local computer
+  traefik:
+    image: traefik:v2.5
+    command:
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--entrypoints.web.address=:80'
+    ports:
+      - '80:80'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+    networks:
+      - network--dev
+
+# development
+networks:
+  network--dev:

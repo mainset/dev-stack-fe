@@ -15,7 +15,8 @@
   "type": "module",
   "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "src/commands/init/templates"
   ],
   "exports": {
     "./runtime": {

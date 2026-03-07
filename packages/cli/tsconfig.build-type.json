@@ -4,5 +4,6 @@
     "outDir": "./dist/types",
     // TODO: review possibility to move into {common} config
     "target": "es2017"
-  }
+  },
+  "exclude": ["./src/commands/init/templates/**/*"]
 }
