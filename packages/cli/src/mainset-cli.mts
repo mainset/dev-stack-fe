@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 
 import {
+  registerInitCommand,
   registerNodeSourcerCommand,
   registerSourceCodeCommand,
   registerWebAppCommand,
@@ -18,6 +19,7 @@ program
   .description('CLI to manage frontend tooling and infrastructure')
   .version('0.1.0');
 
+registerInitCommand(program);
 registerSourceCodeCommand(program);
 registerNodeSourcerCommand(program);
 registerWebAppCommand(program);

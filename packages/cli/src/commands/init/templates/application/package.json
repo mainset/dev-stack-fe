@@ -1,0 +1,24 @@
+{
+  "engines": {
+    "node": ">=24.14.0"
+  },
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development ms-cli web-app --exec serve",
+    "dev:csr": "cross-env NODE_ENV=development ms-cli web-app --exec serve --serveMode csr",
+    "build": "ms-cli web-app --exec build",
+    "build:csr": "ms-cli web-app --exec build --serveMode csr",
+    "serve": "ms-cli web-app --exec serve-static",
+    "serve:csr": "ms-cli web-app --exec serve-static --serveMode csr"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@mainset/bundler-webpack": "^0.3.1",
+    "@mainset/cli": "^0.5.0-rc.1",
+    "@mainset/dev-stack-fe": "^0.2.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1"
+  }
+}
