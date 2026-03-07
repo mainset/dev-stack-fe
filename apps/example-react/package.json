@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=24.14.0"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development ms-cli web-app --exec serve",

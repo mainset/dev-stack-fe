@@ -17,6 +17,12 @@ on:
 
 run-name: Publish ${{ github.event.inputs.package }}
 
+# Trusted publishing for npm packages
+# https://docs.npmjs.com/trusted-publishers
+permissions:
+  id-token: write # Required for OIDC (Trusted Publishing)
+  contents: write # Required for creating GitHub releases
+
 jobs:
   publish-selected-package:
     runs-on: ubuntu-latest
@@ -27,6 +33,10 @@ jobs:
         uses: actions/checkout@v4
 
       - uses: ./.github/actions/install-and-cache-dependencies
+        with:
+          # NOTE: the registry URL passed and "variable"
+          node-registry-url: 'https://registry.npmjs.org/'
+
       - uses: ./.github/actions/build-packages
 
       # NOTE: this step could be used in case when {build-packages} is standalone job
@@ -99,5 +109,3 @@ jobs:
         run: |
           echo "Publishing \"$RELEASE_NAME\" under \"$PACKAGE__TAG_NAME\" tag"
           pnpm publish --filter "${{ github.event.inputs.package }}" --tag="$PACKAGE__TAG_NAME" --access public --no-git-checks
-        env:
-          NPMRC_AUTH_TOKEN__MAINSET: ${{ secrets.NPMRC_AUTH_TOKEN__MAINSET }}

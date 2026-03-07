@@ -1,16 +1,23 @@
 name: Install and Cache Dependencies
 description: Setup Node.js, pnpm, and cache
+
+inputs:
+  node-registry-url:
+    description: 'Registry URL for Node.js setup'
+    required: false
+    default: ''
+
 runs:
   using: 'composite'
   steps:
-    # Check and copy .npmrc.example if it exists
-    - name: Copy .npmrc.example to .npmrc if present
-      run: |
-        if [ -f .npmrc.example ]; then
-          echo "📋 Found .npmrc.example, copying to .npmrc ..."
-          cp .npmrc.example .npmrc
-        fi
-      shell: bash
+    # Check and copy .npmrc.example if it exists to authenticate with private registries (if needed)
+    # - name: Copy .npmrc.example to .npmrc if present
+    #   run: |
+    #     if [ -f .npmrc.example ]; then
+    #       echo "📋 Found .npmrc.example, copying to .npmrc ..."
+    #       cp .npmrc.example .npmrc
+    #     fi
+    #   shell: bash
 
     # Restore pnpm store from cache if GitHub Action been running on commit before
     - name: Restore pnpm store from cache
@@ -25,7 +32,8 @@ runs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 22
+        node-version: 24
+        registry-url: ${{ inputs.node-registry-url }}
 
     # Enable corepack and prepare pnpm
     - name: Enable corepack and prepare pnpm
