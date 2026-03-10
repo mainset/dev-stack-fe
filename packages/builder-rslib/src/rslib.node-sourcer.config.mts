@@ -16,7 +16,10 @@ const nodeSourcerCommonPresetRslib = defineConfig({
       // OutBase: runtimePathById.dist,
       output: {
         filename: {
-          js: 'esm/index.mjs',
+          js: '[name].mjs',
+        },
+        distPath: {
+          root: path.join(runtimePathById.dist, 'esm'),
         },
       },
       autoExternal: {
@@ -32,7 +35,10 @@ const nodeSourcerCommonPresetRslib = defineConfig({
       // OutBase: runtimePathById.dist,
       output: {
         filename: {
-          js: 'cjs/index.cjs',
+          js: '[name].cjs',
+        },
+        distPath: {
+          root: path.join(runtimePathById.dist, 'cjs'),
         },
       },
       autoExternal: {
@@ -46,7 +52,10 @@ const nodeSourcerCommonPresetRslib = defineConfig({
   ],
   source: {
     entry: {
-      index: [path.join(runtimePathById.src, 'index.mts')],
+      index: path.join(
+        runtimePathById.src,
+        process.env.MS_CLI__RSLIB_BUNDLESS_MODE ? '/**/*' : 'index.mts',
+      ),
     },
   },
   output: {
