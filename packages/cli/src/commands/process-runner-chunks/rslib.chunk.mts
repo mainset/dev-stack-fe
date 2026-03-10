@@ -1,3 +1,5 @@
+import type { ExecSyncOptions, SpawnOptions } from 'child_process';
+
 import { resolveHostPackageBinForCLICommandPath } from '../../runtime/index.mjs';
 import {
   execImmediateCommand,
@@ -13,16 +15,22 @@ function getRslibCLICommandPath() {
   return rslibCLICommandPath;
 }
 
-function execImmediateRslibCLICommand(command: string) {
+function execImmediateRslibCLICommand(
+  command: string,
+  options: ExecSyncOptions = {},
+) {
   const rslibCLICommandPath = getRslibCLICommandPath();
 
-  return execImmediateCommand(`${rslibCLICommandPath} ${command}`);
+  return execImmediateCommand(`${rslibCLICommandPath} ${command}`, options);
 }
 
-function runStreamingRslibCLICommand(commandParams: string[]) {
+function runStreamingRslibCLICommand(
+  commandParams: string[],
+  options: SpawnOptions = {},
+) {
   const rslibCLICommandPath = getRslibCLICommandPath();
 
-  return runStreamingCommand(rslibCLICommandPath, [...commandParams]);
+  return runStreamingCommand(rslibCLICommandPath, [...commandParams], options);
 }
 
 export { execImmediateRslibCLICommand, runStreamingRslibCLICommand };

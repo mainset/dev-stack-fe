@@ -22,8 +22,24 @@ function registerNodeSourcerCommand(program: Command) {
     .requiredOption('-e, --exec <type>', 'Execution mode: build or watch')
     // .option('-b, --builder <builder>', 'Builder tool (default: rslib)', 'rslib')
     .option('-c, --config <path>', 'Path to config file', './rslib.config.mts')
+    .option('-t, --target <name>', 'Execution mode: node, web, react', 'node')
+    .option(
+      '--bundless',
+      'Bundleless mode, means that each source file is compiled and built separately.',
+    )
     .action((options) => {
       // Step 0: determinate command params
+      const CONFIG_FILE_NAME__BY_TARGET = {
+        node: 'node-sourcer',
+        web: 'web-package',
+        react: 'react',
+      };
+      const configFileName =
+        CONFIG_FILE_NAME__BY_TARGET[
+          (options.target as keyof typeof CONFIG_FILE_NAME__BY_TARGET) ||
+            CONFIG_FILE_NAME__BY_TARGET.node
+        ];
+
       const customRslibConfigPath = path.resolve(
         runtimePathById.root,
         options.config,
@@ -34,7 +50,7 @@ function registerNodeSourcerCommand(program: Command) {
             runtimePathById.root,
             // NOTE: possibility to check if package is installed, otherwise throw error
             'node_modules',
-            '@mainset/builder-rslib/dist/esm/rslib.node-sourcer.config.mjs',
+            `@mainset/builder-rslib/dist/esm/rslib.${configFileName}.config.mjs`,
           );
 
       if (options.exec === 'build') {
@@ -47,7 +63,14 @@ function registerNodeSourcerCommand(program: Command) {
 
           // Step 2: build source code
           console.log('\n📦 Compiling Source Code with Rslib ...');
-          execImmediateRslibCLICommand(`build --config ${rslibConfigPath}`);
+          execImmediateRslibCLICommand(
+            `build --config ${rslibConfigPath}${options.bundless ? ' --no-bundle' : ''}`,
+            {
+              env: {
+                MS_CLI__RSLIB_BUNDLESS_MODE: options.bundless,
+              },
+            },
+          );
 
           // Step 3: build type only
           execImmediateTypeScriptCompileTypeOnly();
@@ -65,12 +88,20 @@ function registerNodeSourcerCommand(program: Command) {
           execImmediatePurgeDist();
 
           // Step 2: watch source code
-          runStreamingRslibCLICommand([
-            'build',
-            '--config',
-            rslibConfigPath,
-            '--watch',
-          ]);
+          runStreamingRslibCLICommand(
+            [
+              'build',
+              '--config',
+              rslibConfigPath,
+              options.bundless ? '--no-bundle' : '',
+              '--watch',
+            ],
+            {
+              env: {
+                MS_CLI__RSLIB_BUNDLESS_MODE: options.bundless,
+              },
+            },
+          );
 
           // Step 3: watch type only
           runStreamingTypeScriptCompileTypeOnly();
