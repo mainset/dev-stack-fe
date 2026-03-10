@@ -28,9 +28,9 @@
     "dev": "cross-env NODE_ENV=development ms-cli source-code --exec watch"
   },
   "dependencies": {
-    "@rsbuild/plugin-react": "^1.4.1",
-    "@rsbuild/plugin-sass": "^1.4.0",
-    "@rslib/core": "^0.15.0"
+    "@rsbuild/plugin-react": "^1.4.5",
+    "@rsbuild/plugin-sass": "^1.5.0",
+    "@rslib/core": "^0.20.0"
   },
   "devDependencies": {
     "@mainset/cli": "workspace:^",

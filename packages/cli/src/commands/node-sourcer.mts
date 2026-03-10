@@ -22,6 +22,10 @@ function registerNodeSourcerCommand(program: Command) {
     .requiredOption('-e, --exec <type>', 'Execution mode: build or watch')
     // .option('-b, --builder <builder>', 'Builder tool (default: rslib)', 'rslib')
     .option('-c, --config <path>', 'Path to config file', './rslib.config.mts')
+    .option(
+      '--no-bundle',
+      'Bundleless mode, means that each source file is compiled and built separately.',
+    )
     .action((options) => {
       // Step 0: determinate command params
       const customRslibConfigPath = path.resolve(
@@ -47,7 +51,9 @@ function registerNodeSourcerCommand(program: Command) {
 
           // Step 2: build source code
           console.log('\n📦 Compiling Source Code with Rslib ...');
-          execImmediateRslibCLICommand(`build --config ${rslibConfigPath}`);
+          execImmediateRslibCLICommand(
+            `build --config ${rslibConfigPath} --no-bundle ${options.bundle}`,
+          );
 
           // Step 3: build type only
           execImmediateTypeScriptCompileTypeOnly();
@@ -69,6 +75,8 @@ function registerNodeSourcerCommand(program: Command) {
             'build',
             '--config',
             rslibConfigPath,
+            '--no-bundle',
+            options.bundle,
             '--watch',
           ]);
 

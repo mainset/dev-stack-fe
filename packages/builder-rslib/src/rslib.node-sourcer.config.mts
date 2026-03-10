@@ -46,7 +46,7 @@ const nodeSourcerCommonPresetRslib = defineConfig({
   ],
   source: {
     entry: {
-      index: [path.join(runtimePathById.src, 'index.mts')],
+      index: path.join(runtimePathById.src, 'index.mts'),
     },
   },
   output: {
