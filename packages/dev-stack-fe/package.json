@@ -51,10 +51,10 @@
     "typescript-eslint": "^8.46.0"
   },
   "peerDependencies": {
-    "cross-env": "^10.1.0",
-    "eslint": "^9.37.0",
-    "husky": "^9.1.7",
-    "prettier": "^3.6.2",
-    "stylelint": "^16.25.0"
+    "cross-env": ">=10.1.0 <11.0.0",
+    "eslint": ">=9.37.0 <10.0.0",
+    "husky": ">=9.1.7 <10.0.0",
+    "prettier": ">=3.6.2 <4.0.0",
+    "stylelint": ">=16.25.0 <17.0.0"
   }
 }
