@@ -6,7 +6,7 @@ import type { RuleSetRule } from 'webpack';
 import babelConfig from '../../../babel.config.mjs';
 
 const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
-  test: /\.(ts|mts|tsx)$/,
+  test: /\.((ts|mts|tsx)|(js|mjs|jsx))$/,
   exclude: /node_modules/,
   use: {
     loader: resolveHostPackageNodeModulesPath(
