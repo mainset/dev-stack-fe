@@ -1,5 +1,6 @@
 import '@mainset/cli/process-env-type';
 import { merge } from '@mainset/toolkit-js';
+import { pluginSass } from '@rsbuild/plugin-sass';
 
 import { nodeSourcerCommonPresetRslib } from './rslib.node-sourcer.config.mjs';
 import { initRslibConfigGenerator } from './utils.mjs';
@@ -20,6 +21,7 @@ const webPackageCommonPresetRslib = merge(nodeSourcerCommonPresetRslib, {
     // https://rsbuild.dev/config/output/source-map#default-behavior
     // sourceMap: true,
   },
+  plugins: [pluginSass()],
   tools: {
     cssLoader: {
       modules: {
