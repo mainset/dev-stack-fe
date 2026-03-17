@@ -1,6 +1,6 @@
 {
   "name": "@mainset/builder-rslib",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Builder for node packages",
   "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/builder-rslib",
   "bugs": {
