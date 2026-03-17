@@ -52,10 +52,10 @@ const nodeSourcerCommonPresetRslib = defineConfig({
   ],
   source: {
     entry: {
-      index: path.join(
-        runtimePathById.src,
-        process.env.MS_CLI__RSLIB_BUNDLESS_MODE ? '/**/*' : 'index.mts',
-      ),
+      index: process.env.MS_CLI__RSLIB_BUNDLESS_MODE
+        ? // NOTE: the {.replace} is required to make the path work on Windows OS
+          path.join(runtimePathById.src, '/**/*').replace(/\\/g, '/')
+        : path.join(runtimePathById.src, 'index.mts'),
     },
   },
   output: {

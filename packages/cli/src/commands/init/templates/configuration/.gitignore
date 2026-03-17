@@ -1,0 +1,13 @@
+# os specific
+.DS_Store
+
+# node specific
+node_modules
+
+# architecture base structure
+dist
+
+# secrets
+.npmrc
+.env*
+!.env.example
