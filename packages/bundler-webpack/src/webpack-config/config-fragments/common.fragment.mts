@@ -4,7 +4,7 @@ import type { Configuration } from 'webpack';
 import {
   BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
   FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
-  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
+  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
 } from './module-rules/index.mjs';
 
 const commonWebpackConfigFragment: Configuration = {
@@ -14,7 +14,7 @@ const commonWebpackConfigFragment: Configuration = {
   module: {
     rules: [
       BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
-      IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
+      ...IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
       {
         ...FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         type: 'asset/resource',
