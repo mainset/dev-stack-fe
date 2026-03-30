@@ -17,7 +17,7 @@ import {
   CSS_STYLES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
   CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
   FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
-  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
+  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
 } from './config-fragments/module-rules/index.mjs';
 
 const nullLoaderModuleRules = [
@@ -65,7 +65,7 @@ const ssrServerCommonWebpackConfigFragment: Configuration = {
     rules: [
       // common config
       BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
-      IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
+      ...IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
       // do NOT bundle in SSR mode, because they are not used during rendering on the server
       ...nullLoaderModuleRules,
     ],

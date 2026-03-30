@@ -17,16 +17,23 @@ const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
   },
 };
 
-const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
-  test: /\.(svg|png)$/,
-  type: 'asset/resource',
-  generator: {
-    filename: '[name].[hash].[ext]',
-    outputPath: 'dist/assets/images',
+const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS: RuleSetRule[] = [
+  {
+    test: /\.(svg|png)$/,
+    exclude: /\.source\.svg$/,
+    type: 'asset/resource',
+    generator: {
+      filename: '[name].[hash].[ext]',
+      outputPath: 'dist/assets/images',
+    },
   },
-};
+  {
+    test: /\.source\.svg$/,
+    type: 'asset/source',
+  },
+];
 
 export {
   BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
-  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENT,
+  IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
 };
