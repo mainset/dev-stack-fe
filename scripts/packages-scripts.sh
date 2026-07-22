@@ -10,6 +10,12 @@ preinstall() {
 
   # pnpm --filter @mainset/cli run build
   pnpm run pre-build:compile--cli
+
+  # NOTE: pnpm 11's "already up to date" fast-path trusts a cached workspace-state
+  # marker and can skip re-linking node_modules/.bin even though @mainset/cli's dist
+  # was just built above — bust that cache so the next {pnpm install} actually
+  # (re)links the {ms-cli} bin into every package that depends on it.
+  rm -f node_modules/.modules.yaml node_modules/.pnpm-workspace-state-v1.json
 }
 
 prebuild() {
