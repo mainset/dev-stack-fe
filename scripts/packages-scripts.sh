@@ -23,6 +23,10 @@ setup_initial() {
   preinstall
 
   # Step-2: Install dependencies to register the CLI across monorepo
+  # NOTE: pnpm 11's "already up to date" fast-path trusts a cached workspace-state
+  # marker and can skip re-linking node_modules/.bin even though @mainset/cli's dist
+  # was just built by {preinstall} — bust that cache so bins actually get (re)linked.
+  rm -f node_modules/.modules.yaml node_modules/.pnpm-workspace-state-v1.json
   pnpm install
 
   # Step-3: Steps required before {build:packages} command could be run
