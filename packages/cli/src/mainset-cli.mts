@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import {
   registerInitCommand,
   registerNodeSourcerCommand,
+  registerPurgeCommand,
   registerSourceCodeCommand,
   registerWebAppCommand,
 } from './commands/index.mjs';
@@ -20,8 +21,9 @@ program
   .version('0.1.0');
 
 registerInitCommand(program);
-registerSourceCodeCommand(program);
 registerNodeSourcerCommand(program);
+registerPurgeCommand(program);
+registerSourceCodeCommand(program);
 registerWebAppCommand(program);
 
 program.parse(process.argv);
