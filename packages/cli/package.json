@@ -39,19 +39,19 @@
     "purge:dist": "rm -rf ./dist"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.51.0",
-    "@types/node": "^24.7.0",
-    "commander": "^14.0.1",
-    "cors": "^2.8.5",
+    "@dotenvx/dotenvx": "^2.17.1",
+    "@types/node": "^26.1.1",
+    "commander": "^15.0.0",
+    "cors": "^2.8.6",
     "cross-env": "^10.1.0",
-    "express": "^5.1.0",
-    "http-proxy-middleware": "^3.0.5"
+    "express": "^5.2.1",
+    "http-proxy-middleware": "^4.2.0"
   },
   "devDependencies": {
     "@mainset/dev-stack-fe": "workspace:^",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.7.0"
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.1"
   },
   "peerDependencies": {
     "@mainset/dev-stack-fe": ">=0.2.0 <1.0.0"
