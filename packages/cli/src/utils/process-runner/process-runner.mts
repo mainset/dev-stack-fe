@@ -1,5 +1,6 @@
 import type { ExecSyncOptions, SpawnOptions } from 'child_process';
 import { execSync, spawn } from 'child_process';
+import fs from 'fs';
 
 import { consoleColorize } from '../index.mjs';
 import { processManager } from './process-manager.mjs';
@@ -102,17 +103,27 @@ function runStreamingCommand(
   }
 }
 
+const WAIT_FOR_FILE__DEFAULT_POLL_INTERVAL_MS = 200;
+const WAIT_FOR_FILE__DEFAULT_TIMEOUT_MS = 120_000;
+
+type WaitForFileOption =
+  string | { path: string; pollIntervalMs?: number; timeoutMs?: number };
+
 /**
- * Runs a streaming command in sync mode.
- * This is a placeholder function and does not execute any command.
- * It is used to maintain compatibility with the existing code structure.
+ * Runs a streaming command in sync mode: each subsequent command only starts
+ * once the previous one is considered "ready".
  *
- * Example: runStreamingInSync([{ runCommand: () => runStreamingCommand(), waitForOutput: 'compiled successfully' }]);
+ * NOTE: {runStreamingCommand} spawns with {stdio: 'inherit'} so its output streams
+ * directly to the terminal — this means {child.stdout} is always `null` and can NOT
+ * be listened to for readiness text. Use {waitForFile} (polls the filesystem for a
+ * path to exist) as the readiness signal instead.
+ *
+ * Example: runStreamingInSync([{ runCommand: () => runStreamingCommand(), waitForFile: './dist/private/ssr-server.config.mjs' }]);
  */
 async function runStreamingInSync(
   streamings: {
     runCommand: () => ReturnType<typeof runStreamingCommand>;
-    waitForOutput?: string;
+    waitForFile?: WaitForFileOption;
   }[],
 ) {
   for (const streaming of streamings) {
@@ -129,13 +140,35 @@ async function runStreamingInSync(
         return;
       }
 
-      if (streaming.waitForOutput && child.stdout) {
-        child.stdout.on('data', (data) => {
-          const text = data.toString();
-          if (text.includes(streaming.waitForOutput!)) {
+      if (streaming.waitForFile) {
+        const {
+          path: waitForFilePath,
+          pollIntervalMs = WAIT_FOR_FILE__DEFAULT_POLL_INTERVAL_MS,
+          timeoutMs = WAIT_FOR_FILE__DEFAULT_TIMEOUT_MS,
+        } = typeof streaming.waitForFile === 'string'
+          ? { path: streaming.waitForFile }
+          : streaming.waitForFile;
+
+        const startedAt = Date.now();
+
+        const pollIntervalId = setInterval(() => {
+          if (fs.existsSync(waitForFilePath)) {
+            clearInterval(pollIntervalId);
             resolve();
+            return;
           }
-        });
+
+          if (Date.now() - startedAt > timeoutMs) {
+            clearInterval(pollIntervalId);
+            reject(
+              new Error(
+                `[mainset cli][runStreamingInSync] Timed out after ${timeoutMs}ms waiting for "${waitForFilePath}" to be generated.`,
+              ),
+            );
+          }
+        }, pollIntervalMs);
+
+        child.on('exit', () => clearInterval(pollIntervalId));
       } else {
         resolve();
       }

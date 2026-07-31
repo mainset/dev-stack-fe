@@ -169,7 +169,10 @@ function registerWebAppCommand(program: Command) {
                       },
                     },
                   ),
-                waitForOutput: 'compiled successfully',
+                // NOTE: the SSR webapp config compiles two bundles (server + browser),
+                // so waiting on stdout text can't reliably tell when the server one
+                // specifically is ready — wait for its actual compiled file instead.
+                waitForFile: ssrServerConfigCompiledPath,
               },
               // Step 3: start:ssr-server which is compiled web app and ssr-server code
               {
