@@ -136,6 +136,9 @@ importers:
       webpack-dev-server:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)(tslib@2.8.1)(webpack-cli@7.2.1)(webpack@5.108.4)
+      webpack-merge:
+        specifier: ^6.0.1
+        version: 6.0.1
     devDependencies:
       '@mainset/cli':
         specifier: workspace:^
@@ -143,9 +146,6 @@ importers:
       '@mainset/dev-stack-fe':
         specifier: workspace:^
         version: link:../dev-stack-fe
-      '@mainset/toolkit-js':
-        specifier: workspace:^
-        version: link:../toolkit-js
 
   packages/cli:
     dependencies:

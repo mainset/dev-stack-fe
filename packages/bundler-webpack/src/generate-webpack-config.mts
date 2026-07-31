@@ -1,6 +1,6 @@
-import { merge } from '@mainset/toolkit-js';
 import type { Configuration as WebpackConfig } from 'webpack';
 import type { Configuration as DevServerConfig } from 'webpack-dev-server';
+import { merge } from 'webpack-merge';
 
 import csrDevServerWebappEnvBasedConfig from './webpack-config/dev-server.csr.config.mjs';
 import ssrEnvBasedConfigs from './webpack-config/webapp.ssr.config.mjs';

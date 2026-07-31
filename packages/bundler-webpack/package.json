@@ -50,16 +50,15 @@
     "terser-webpack-plugin": "^5.6.1",
     "webpack": "^5.108.4",
     "webpack-cli": "^7.2.1",
-    "webpack-dev-server": "^6.0.0"
+    "webpack-dev-server": "^6.0.0",
+    "webpack-merge": "^6.0.1"
   },
   "devDependencies": {
     "@mainset/cli": "workspace:^",
-    "@mainset/dev-stack-fe": "workspace:^",
-    "@mainset/toolkit-js": "workspace:^"
+    "@mainset/dev-stack-fe": "workspace:^"
   },
   "peerDependencies": {
     "@mainset/cli": ">=0.5.0 <1.0.0",
-    "@mainset/dev-stack-fe": ">=0.2.0 <1.0.0",
-    "@mainset/toolkit-js": ">=0.1.0 <1.0.0"
+    "@mainset/dev-stack-fe": ">=0.2.0 <1.0.0"
   }
 }

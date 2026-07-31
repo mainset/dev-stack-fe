@@ -19,8 +19,10 @@ const commonWebpackConfigFragment: Configuration = {
         ...FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         type: 'asset/resource',
         generator: {
-          filename: '[name].[hash].[ext]',
-          outputPath: 'dist/assets/fonts',
+          filename: '[name].[contenthash:8].[ext]',
+          // NOTE: the following paths are relative to the webpack output path (e.g. dist/)
+          outputPath: 'assets/fonts/',
+          publicPath: 'assets/fonts/',
         },
       },
     ],
@@ -35,6 +37,7 @@ const commonWebpackConfigFragment: Configuration = {
       // Extra / custom
       '.ts',
       '.tsx',
+      '.jsx',
     ],
   },
 };
