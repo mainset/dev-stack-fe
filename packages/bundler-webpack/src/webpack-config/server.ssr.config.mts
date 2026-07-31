@@ -136,6 +136,7 @@ const ssrServerProdWebpackConfigFragment: Configuration = {
 
 const ssrServerDevWebpackConfigFragment: Configuration = {
   mode: 'development',
+  devtool: 'inline-source-map',
 
   module: {
     rules: [
