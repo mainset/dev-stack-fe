@@ -1,8 +1,6 @@
 import { resolveHostPackageNodeModulesPath } from '@mainset/cli/runtime';
 import type { RuleSetRule } from 'webpack';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import {
   BABEL_CONFIG__BROWSER,
   BABEL_CONFIG__NODE,
