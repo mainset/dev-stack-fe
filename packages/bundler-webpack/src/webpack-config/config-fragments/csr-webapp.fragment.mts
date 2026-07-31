@@ -1,10 +1,12 @@
 import { runtimePathById } from '@mainset/cli/runtime';
-import { merge } from '@mainset/toolkit-js';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
 import fs from 'fs';
 import path from 'path';
+import { merge } from 'webpack-merge';
 
-import { commonWebappWebpackConfigFragment } from './common-webapp.fragment.mjs';
+import {
+  commonWebappWebpackConfigFragment,
+  createPublicAssetsCopyPlugin,
+} from './common-webapp.fragment.mjs';
 
 // The entry point for the CSR webapp
 const defaultEntry = path.join(runtimePathById.src, 'index.ts');
@@ -17,17 +19,7 @@ const csrWebappWebpackConfigFragment = merge(
   {
     entry: [bundlerEntry],
 
-    plugins: [
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            from: path.join(runtimePathById.root, 'public'),
-            to: path.join(runtimePathById.dist),
-            noErrorOnMissing: true, // optional: don't error if public doesn't exist
-          },
-        ],
-      }),
-    ],
+    plugins: [createPublicAssetsCopyPlugin(runtimePathById.dist)],
   },
 );
 

@@ -4,13 +4,12 @@ import {
   resolveHostPackageNodeModulesPath,
   runtimePathById,
 } from '@mainset/cli/runtime';
-import { merge } from '@mainset/toolkit-js';
 import path from 'path';
 import type { Configuration } from 'webpack';
+import { merge } from 'webpack-merge';
 
 import { commonWebpackConfigFragment } from './config-fragments/common.fragment.mjs';
 import {
-  BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
   CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
   CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
   CSS_MODULES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
@@ -18,6 +17,7 @@ import {
   CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
   FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
   IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
+  SSR_SERVER_BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
 } from './config-fragments/module-rules/index.mjs';
 
 const nullLoaderModuleRules = [
@@ -64,7 +64,7 @@ const ssrServerCommonWebpackConfigFragment: Configuration = {
   module: {
     rules: [
       // common config
-      BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
+      SSR_SERVER_BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
       ...IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
       // do NOT bundle in SSR mode, because they are not used during rendering on the server
       ...nullLoaderModuleRules,
@@ -92,25 +92,19 @@ const generateSSRCssStylesRuleWebpackConfigFragment = ({
         ...CSS_MODULES__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         use: [
           // NOTE: allow {css-loader} to transform CSS Modules to hashed class names while rendering HTML
-          merge(
-            CSS_LOADER__RULE_USE_OPTIONS__BY_MODE[mode],
-            {
-              options: {
-                modules: {
-                  // !IMPORTANT: attach transformed CSS Modules class names into HTML
-                  // without compiling CSS inside JS file
-                  exportOnlyLocals: true,
-                  // - {exportOnlyLocals: true} tells css-loader to only export the mapping of class names to hashes
-                  //    (for use in SSR), and not to emit or bundle any CSS.
-                  // - This allows your SSR code to inject the correct class names into the rendered HTML,
-                  //    without including or compiling CSS into the server bundle.
-                },
+          merge(CSS_LOADER__RULE_USE_OPTIONS__BY_MODE[mode], {
+            options: {
+              modules: {
+                // !IMPORTANT: attach transformed CSS Modules class names into HTML
+                // without compiling CSS inside JS file
+                exportOnlyLocals: true,
+                // - {exportOnlyLocals: true} tells css-loader to only export the mapping of class names to hashes
+                //    (for use in SSR), and not to emit or bundle any CSS.
+                // - This allows your SSR code to inject the correct class names into the rendered HTML,
+                //    without including or compiling CSS into the server bundle.
               },
             },
-            {
-              isSourceObjMutated: false,
-            },
-          ),
+          }),
           ...CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
         ],
       },

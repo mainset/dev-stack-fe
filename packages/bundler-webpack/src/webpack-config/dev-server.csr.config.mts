@@ -1,10 +1,10 @@
 import { runtimePathById } from '@mainset/cli/runtime';
-import { merge } from '@mainset/toolkit-js';
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import type { Configuration as WebpackConfig } from 'webpack';
 import type { Configuration as DevServerConfig } from 'webpack-dev-server';
+import { merge } from 'webpack-merge';
 
 import csrWebappEnvBasedConfig from './webapp.csr.config.mjs';
 

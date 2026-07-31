@@ -1,7 +1,7 @@
 import { NODE_ENV, runtimePathById } from '@mainset/cli/runtime';
-import { merge } from '@mainset/toolkit-js';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
+import { merge } from 'webpack-merge';
 
 import { devWebpackConfigFragment } from './config-fragments/dev.fragment.mjs';
 import { prodWebpackConfigFragment } from './config-fragments/prod.fragment.mjs';

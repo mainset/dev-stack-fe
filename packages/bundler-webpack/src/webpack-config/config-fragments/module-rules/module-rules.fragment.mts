@@ -3,9 +3,14 @@ import type { RuleSetRule } from 'webpack';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import babelConfig from '../../../babel.config.mjs';
+import {
+  BABEL_CONFIG__BROWSER,
+  BABEL_CONFIG__NODE,
+} from '../../../babel.config.mjs';
 
-const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
+const createBabelLoaderRule = (
+  options: Record<string, unknown>,
+): RuleSetRule => ({
   test: /\.((ts|mts|tsx)|(js|mjs|jsx))$/,
   exclude: /node_modules/,
   use: {
@@ -13,9 +18,17 @@ const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule = {
       '@mainset/bundler-webpack',
       'babel-loader',
     ),
-    options: babelConfig,
+    options,
   },
-};
+});
+
+const BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule =
+  createBabelLoaderRule(BABEL_CONFIG__BROWSER);
+
+// NOTE: dedicated rule for the SSR server bundle (target: 'node') so it uses
+// {BABEL_CONFIG__NODE} instead of the browser-targeted preset-env config
+const SSR_SERVER_BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule =
+  createBabelLoaderRule(BABEL_CONFIG__NODE);
 
 const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS: RuleSetRule[] = [
   {
@@ -23,8 +36,10 @@ const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS: RuleSetRule[] = [
     exclude: /\.source\.svg$/,
     type: 'asset/resource',
     generator: {
-      filename: '[name].[hash].[ext]',
-      outputPath: 'dist/assets/images',
+      filename: '[name].[contenthash:8].[ext]',
+      // NOTE: the following paths are relative to the webpack output path (e.g. dist/)
+      outputPath: 'assets/images/',
+      publicPath: 'assets/images/',
     },
   },
   {
@@ -36,4 +51,5 @@ const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS: RuleSetRule[] = [
 export {
   BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
   IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
+  SSR_SERVER_BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT,
 };
