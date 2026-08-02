@@ -6,10 +6,12 @@
 
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
-ARG NODE_VERSION=24.14.0
-ARG PNPM_VERSION=10.30.3
+ARG NODE_VERSION=22.18.0
+ARG PNPM_VERSION=11.18.0
 
-FROM node:${NODE_VERSION}-alpine as base
+################################################################################
+# Use node image for base image for all stages.
+FROM node:${NODE_VERSION}-alpine AS base
 
 # Install pnpm.
 RUN --mount=type=cache,target=/root/.npm \
@@ -18,7 +20,7 @@ RUN --mount=type=cache,target=/root/.npm \
 WORKDIR /usr/src/web-app--react
 
 ################################################################################
-# Create a stage for installing production dependencies.
+# install-dependencies
 FROM base AS install-dependencies
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
@@ -26,9 +28,13 @@ FROM base AS install-dependencies
 # Leverage a bind mounts to package.json and pnpm-lock.yaml to avoid having to copy them into
 # into this layer.
 RUN \
-    # mount root files
+    # mount monorepo: root files
     --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
+    # NOTE: the {-workspace.yaml} is required to install {node_modules} in each sub-module
+    --mount=type=bind,source=pnpm-workspace.yaml,target=pnpm-workspace.yaml \
+    # mount monorepo: web-apps files
+    --mount=type=bind,source=apps/shell/package.json,target=apps/shell/package.json \
     # mount cache and install dependencies
     --mount=type=cache,target=/root/.local/share/pnpm/store \
     (\
@@ -38,56 +44,56 @@ RUN \
     )
 
 ################################################################################
-# Create a stage for building the packages source code for Server Side Rendering
-FROM install-dependencies as build-ssr
+# pre-build--source-code stage
+# This stage is used to build the source code of all web applications.
+FROM install-dependencies as pre-build--source-code
 
 # Copy the rest of the source files into the image.
 COPY . .
 
-# Run the build script.
-RUN pnpm run build
+# Build the source code of all applications.
+RUN pnpm run build:apps
 
 ################################################################################
-# Create a new {production} stage that will be running the application
+# production stage
 FROM install-dependencies AS production
 
-# Use production node environment
+# Set node environment.
 ENV NODE_ENV production
 
-# Run the application as a non-root user.
-USER node
-
-# Copy compiled {/dist} code from the {build} Docker stage into the image.
-COPY --chown=node:node --from=build-ssr /usr/src/web-app--react/dist ./dist
-# Copy other required files and folders to launch the application
-COPY ./package.json ./
-COPY ./config ./config
-
-# Expose the port that the application listens on.
-EXPOSE 8080
-
-# Run the application.
-CMD ["pnpm", "run", "serve"]
-
-################################################################################
-# Create a new {development} stage that will be running the application
-FROM install-dependencies AS development
-
-# Use production node environment
-ENV NODE_ENV development
+# Copy the built source code from the pre-build stage.
+COPY --chown=node:node --from=pre-build--source-code /usr/src/web-app--react/apps/shell/dist ./apps/shell/dist
 
 # Run the application as a non-root user.
 USER node
-
-# Copy compiled {/dist} code from the {build} Docker stage into the image.
-COPY --chown=node:node --from=build-ssr /usr/src/web-app--react/dist ./dist
 
 # Copy the rest of the source files into the image.
-# !IMPORTANT: the {--chown=node:node} required, server crashes on file change, files re-generated with root permissions
-COPY --chown=node:node . .
+COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 8080
+EXPOSE 3000
 
 # Run the application.
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "run", "serve:apps"]
+
+################################################################################
+# development stage
+FROM install-dependencies AS development
+
+# Set node environment.
+ENV NODE_ENV development
+
+# Copy the built source code from the pre-build stage.
+COPY --chown=node:node --from=pre-build--source-code /usr/src/web-app--react/apps/shell/dist ./apps/shell/dist
+
+# Run the application as a non-root user.
+USER node
+
+# Copy the rest of the source files into the image.
+COPY . .
+
+# Expose the port that the application listens on.
+EXPOSE 3000
+
+# Run the application.
+CMD ["pnpm", "run", "dev:apps"]

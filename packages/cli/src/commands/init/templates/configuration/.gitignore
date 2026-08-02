@@ -11,3 +11,6 @@ dist
 .npmrc
 .env*
 !.env.example
+
+# prettier excluded
+Dockerfile
