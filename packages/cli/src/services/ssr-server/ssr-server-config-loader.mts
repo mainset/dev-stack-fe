@@ -1,5 +1,6 @@
 import type { CookieOptions } from 'express';
 import fs from 'fs';
+import type { IncomingHttpHeaders } from 'http';
 import path from 'path';
 import { pathToFileURL } from 'url';
 
@@ -41,10 +42,23 @@ interface SSRRenderResult {
   cookies?: SSRRenderCookie[];
 }
 
+// NOTE: what a render function receives per request. {reqHeaders} carries the
+// raw request headers so a render can resolve request-dependent things
+// server-side — {Accept-Language} for locale selection, {Cookie} for a
+// persisted preference. Named to match {reqUrl}: both describe the incoming
+// request, as opposed to {SSRRenderResult.headers}, which is what goes back
+// out in the response. Additive: renders that ignore it keep working
+// unchanged.
+interface SSRRenderParams {
+  reqUrl: string;
+  fullUrl: string;
+  reqHeaders: IncomingHttpHeaders;
+}
+
 interface SSRConfigParams extends Partial<ExpressBaseAppConfig> {
   renderSSRContentByPath: Record<
     string, // URL path to render SSR content
-    (_params: { reqUrl: string; fullUrl: string }) => Promise<SSRRenderResult>
+    (_params: SSRRenderParams) => Promise<SSRRenderResult>
   >;
 }
 
@@ -145,4 +159,4 @@ async function getSSRServerConfig(): Promise<SSRConfigParams> {
 }
 
 export { getSSRServerConfig, ssrServerConfig };
-export type { SSRConfigParams, SSRRenderCookie, SSRRenderResult };
+export type { SSRConfigParams, SSRRenderParams, SSRRenderResult };

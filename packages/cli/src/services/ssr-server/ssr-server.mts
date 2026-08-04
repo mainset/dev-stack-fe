@@ -111,6 +111,14 @@ Object.keys(startupRenderSSRContentByPath).forEach((renderSSRContentPath) => {
         const renderResult = await renderSSRContent({
           reqUrl: req.url,
           fullUrl,
+          // NOTE: the raw request headers, so a render can resolve things that
+          // are only knowable from the request itself — {Accept-Language} for
+          // picking a locale, {Cookie} for a persisted preference. Without
+          // this, an SSR render has no way to tell one visitor from another
+          // and has to fall back to a fixed default, which then has to be
+          // corrected client-side (a visible flash, and the wrong locale is
+          // what crawlers see).
+          reqHeaders: req.headers,
         });
 
         sendSSRRenderResult(res, renderResult);
