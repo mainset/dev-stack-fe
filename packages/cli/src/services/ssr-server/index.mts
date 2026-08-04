@@ -1,1 +1,5 @@
-export type { SSRConfigParams } from './ssr-server-config-loader.mjs';
+export type {
+  SSRConfigParams,
+  SSRRenderCookie,
+  SSRRenderResult,
+} from './ssr-server-config-loader.mjs';

@@ -44,7 +44,7 @@ const ssrServerConfig: SSRConfigParams = {
                 )}</div>`,
               );
 
-              return resolve(content);
+              return resolve({ html: content });
             } catch (error) {
               return reject(error);
             }
