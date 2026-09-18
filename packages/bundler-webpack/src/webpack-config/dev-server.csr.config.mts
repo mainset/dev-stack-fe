@@ -20,7 +20,7 @@ const csrDevServerWebappEnvBasedConfig: WebpackConfig & DevServerConfig = merge(
     devServer: {
       port: process.env.PORT || 3000,
       static: {
-        directory: runtimePathById.root,
+        directory: path.join(runtimePathById.dist, 'public'),
       },
       historyApiFallback: true,
       hot: true,
