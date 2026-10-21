@@ -2,9 +2,13 @@ import type { CookieOptions } from 'express';
 import fs from 'fs';
 import type { IncomingHttpHeaders } from 'http';
 import path from 'path';
+import { setTimeout } from 'timers/promises';
 import { pathToFileURL } from 'url';
 
 import { NODE_ENV, parseCliOptions } from '../../runtime/index.mjs';
+// NOTE: imported directly, not via {utils/index.mjs} — that barrel also loads
+// the process runner, whose ProcessManager installs signal handlers on import.
+import { consoleColorize } from '../../utils/console-colorize.mjs';
 import type { ExpressBaseAppConfig } from '../express-base-app/index.mjs';
 
 // Step-1: parse CLI arguments
@@ -100,13 +104,13 @@ async function importSSRServerConfig(): Promise<SSRConfigParams> {
   return importedSSRServerConfig;
 }
 
-// Step-2: load SSR server config at startup — Express routes are registered
-// from this one (see ssr-server.mts), so the set of paths is fixed at boot and
-// only each path's render function is refreshed afterwards.
-let ssrServerConfig: SSRConfigParams = await importSSRServerConfig();
+// NOTE: the first change event fires as soon as webpack starts writing — give
+// it a moment to finish before reading the file again.
+const SSR_SERVER_CONFIG__REWRITE_SETTLE_MS = 100;
 
 let isSSRServerConfigStale = false;
 let ssrServerConfigReload: Promise<SSRConfigParams> | null = null;
+let resolveNextSSRServerConfigChange: (() => void) | null = null;
 
 if (isDevelopment) {
   // NOTE: why watch here instead of relying on {node --watch} (see web-app.mts):
@@ -124,12 +128,91 @@ if (isDevelopment) {
   // currently on disk.
   fs.watch(path.dirname(ssrServerConfigPath), { recursive: true }, () => {
     isSSRServerConfigStale = true;
+
+    resolveNextSSRServerConfigChange?.();
+    resolveNextSSRServerConfigChange = null;
   }).on('error', (error) => {
     console.error(
       '[mainset cli][ssr-server] Compiled config watcher failed, SSR renders will stay stale until restart:',
       error,
     );
   });
+}
+
+const waitForNextSSRServerConfigChange = () =>
+  new Promise<void>((resolve) => {
+    resolveNextSSRServerConfigChange = resolve;
+  });
+
+// NOTE: in {development}, a bundle that can't be imported at startup — webpack
+// still writing it, or it was built from a half-finished edit — is a moment to
+// wait out, not a reason to exit: retry after webpack's next write, the way
+// {node --watch} used to by restarting the process. Production has no rebuild
+// to wait for, so it still fails loudly.
+async function importStartupSSRServerConfig(): Promise<SSRConfigParams> {
+  isSSRServerConfigStale = false;
+
+  try {
+    return await importSSRServerConfig();
+  } catch (error) {
+    if (!isDevelopment) {
+      throw error;
+    }
+
+    console.error(
+      '[mainset cli][ssr-server] Failed to load compiled config, retrying after the next rebuild:',
+      error,
+    );
+
+    // NOTE: a write that landed while the import was in flight has already
+    // marked it stale — retry right away instead of waiting for another one.
+    if (!isSSRServerConfigStale) {
+      await waitForNextSSRServerConfigChange();
+    }
+
+    await setTimeout(SSR_SERVER_CONFIG__REWRITE_SETTLE_MS);
+
+    return importStartupSSRServerConfig();
+  }
+}
+
+// Step-2: load SSR server config at startup — Express routes are registered
+// from this one (see ssr-server.mts), so the set of paths is fixed at boot and
+// only each path's render function is refreshed afterwards.
+let ssrServerConfig: SSRConfigParams = await importStartupSSRServerConfig();
+
+const describeRenderSSRContentPaths = ({
+  renderSSRContentByPath,
+}: SSRConfigParams) => Object.keys(renderSSRContentByPath).join(', ');
+
+const startupRenderSSRContentPaths =
+  describeRenderSSRContentPaths(ssrServerConfig);
+let lastRenderSSRContentPaths = startupRenderSSRContentPaths;
+
+// NOTE: a reload only swaps the render functions behind the routes registered
+// at startup, so a path added or renamed in ssr-server.config.mts needs a
+// restart. Said once per change — every later rebuild reloads the same paths.
+function warnOnRenderSSRContentPathsChange(
+  reloadedSSRServerConfig: SSRConfigParams,
+) {
+  const reloadedRenderSSRContentPaths = describeRenderSSRContentPaths(
+    reloadedSSRServerConfig,
+  );
+
+  if (reloadedRenderSSRContentPaths === lastRenderSSRContentPaths) {
+    return;
+  }
+
+  lastRenderSSRContentPaths = reloadedRenderSSRContentPaths;
+
+  if (reloadedRenderSSRContentPaths !== startupRenderSSRContentPaths) {
+    console.warn(
+      consoleColorize(
+        'BRIGHT_YELLOW',
+        `[mainset cli][ssr-server] {renderSSRContentByPath} paths changed to "${reloadedRenderSSRContentPaths}" — restart the dev server to register them; requests are still matched against "${startupRenderSSRContentPaths}".`,
+      ),
+    );
+  }
 }
 
 async function reloadSSRServerConfig(): Promise<SSRConfigParams> {
@@ -139,6 +222,8 @@ async function reloadSSRServerConfig(): Promise<SSRConfigParams> {
 
   try {
     ssrServerConfig = await importSSRServerConfig();
+
+    warnOnRenderSSRContentPathsChange(ssrServerConfig);
   } catch (error) {
     // NOTE: webpack may be mid-write — keep serving the last good config and
     // retry on the next request, instead of failing this one on a half-written
