@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { pathToFileURL } from 'url';
 
 import { parseCliOptions } from '../../runtime/index.mjs';
 import type { ExpressBaseAppConfig } from '../express-base-app/index.mjs';
@@ -23,6 +24,7 @@ const serveStaticConfig: ExpressBaseAppConfig =
           // NOTE: dot not crash in case if {.json} file is empty
           '{}',
       )
-    : (await import(options.serveStaticConfig)).default;
+    : // NOTE: a file URL, not a path — see express-base-app.mts
+      (await import(pathToFileURL(options.serveStaticConfig).href)).default;
 
 export { serveStaticConfig };
