@@ -1,7 +1,4 @@
-import {
-  resolveHostPackageNodeModulesPath,
-  runtimePathById,
-} from '@mainset/cli/runtime';
+import { runtimePathById } from '@mainset/cli/runtime';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import fs from 'fs';
 import path from 'path';
@@ -33,12 +30,7 @@ const scssGlobalStylesEntry = path.join(
   'global.scss',
 );
 
-const defaultEntry = [
-  resolveHostPackageNodeModulesPath(
-    '@mainset/bundler-webpack',
-    '@babel/polyfill',
-  ),
-];
+const defaultEntry: string[] = [];
 
 if (fs.existsSync(cssGlobalStylesEntry))
   defaultEntry.push(cssGlobalStylesEntry);
