@@ -15,8 +15,8 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@mainset/bundler-webpack": "^0.3.5",
-    "@mainset/cli": "^0.6.1",
+    "@mainset/bundler-webpack": "^0.3.7",
+    "@mainset/cli": "^0.7.2",
     "@mainset/toolkit-js": "^0.2.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/react": "^19.2.18",
