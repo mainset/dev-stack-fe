@@ -4,6 +4,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import path from 'path';
 
 import { runtimePathById } from '../../runtime/index.mjs';
+import { consoleColorize } from '../../utils/console-colorize.mjs';
 import defaultExpressConfig from './express-base-app.config.json' with { type: 'json' };
 
 interface ServeStaticConfig {
@@ -76,7 +77,26 @@ class ExpressBaseApp {
 
   // ========== Public ==========
   public startListening() {
-    this.app.listen(this.listenPort, async () => {
+    this.app.listen(this.listenPort, async (error?: NodeJS.ErrnoException) => {
+      // NOTE: Express 5 hands {listen} errors to this same callback instead of
+      // throwing them. Unchecked, a server that never bound its port (e.g. a
+      // second dev server for the same app) still printed "listening at" below
+      // and lingered on — while requests kept hitting whichever process
+      // really held the port.
+      if (error) {
+        console.error(
+          consoleColorize(
+            'BRIGHT_RED',
+            `[mainset cli] Failed to listen on port ${this.listenPort}:`,
+          ),
+          error.code === 'EADDRINUSE'
+            ? `the port is already in use — is another dev server for this app still running? (${error.message})`
+            : error.message,
+        );
+
+        process.exit(1);
+      }
+
       const packageJson = await import(
         path.resolve(runtimePathById.root, 'package.json'),
         { with: { type: 'json' } }
