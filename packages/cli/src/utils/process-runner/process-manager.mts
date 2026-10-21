@@ -23,16 +23,26 @@ class ProcessManager {
       console.error('Uncaught Exception:', error);
       this.cleanup('uncaughtException');
     });
+    // NOTE: covers every other way out — {runStreamingCommand} exiting because
+    // ONE child exited (e.g. the SSR server failed to bind its port), an
+    // unhandled rejection, a plain {process.exit()}. Without it the remaining
+    // children (e.g. {webpack --watch}) outlived this process, detached from
+    // any terminal and still writing into {dist}.
+    process.on('exit', () => this.killTrackedProcesses());
   }
 
-  private cleanup(signal: string): void {
-    console.log(`\nCleaning up processes (signal: ${signal})...`);
+  private killTrackedProcesses(): void {
     this.processes.forEach((proc) => {
       if (!proc.killed) {
         proc.kill('SIGTERM');
       }
     });
     this.processes.clear();
+  }
+
+  private cleanup(signal: string): void {
+    console.log(`\nCleaning up processes (signal: ${signal})...`);
+    this.killTrackedProcesses();
     process.exit();
   }
 
