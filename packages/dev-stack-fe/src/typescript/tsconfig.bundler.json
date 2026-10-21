@@ -2,6 +2,16 @@
   "extends": ["./tsconfig.json", "./tsconfig.common.fragment.json"],
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    // NOTE: explicit, rather than derived from {target}: the built-in APIs the
+    // oldest supported browsers have natively, as nothing is polyfilled.
+    // ES2021, because dependencies ship untranspiled syntax that already needs
+    // 2020-2021 browsers (e.g. react-router's private class fields: Firefox 90,
+    // Safari 14.1), which have every ES2021 API but not ES2022's ({.at()},
+    // {Object.hasOwn}). Left implicit, it fell back to es2016 and only *looked*
+    // wider wherever a file imported a Node built-in (@types/node adds
+    // `lib es2020`), so a narrower program over the same files — e.g. Module
+    // Federation's type generation — failed on `.flat()` / `.padStart()`.
+    "lib": ["ES2021", "DOM", "DOM.Iterable"]
   }
 }
