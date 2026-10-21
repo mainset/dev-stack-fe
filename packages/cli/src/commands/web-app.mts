@@ -155,6 +155,13 @@ function registerWebAppCommand(program: Command) {
             ]);
             */
 
+            // NOTE: a compiled config left over from the previous run would
+            // satisfy {waitForFile} below straight away, booting the server on a
+            // stale bundle — including stale route paths, which Express registers
+            // only once, at startup. Removing it makes the server wait for THIS
+            // run's first build.
+            fs.rmSync(ssrServerConfigCompiledPath, { force: true });
+
             // NOTE: node SSR server requires webpack to compile web app files first
             runStreamingInSync([
               // Step 2: watch:ssr-webapp source code of web app
@@ -176,15 +183,25 @@ function registerWebAppCommand(program: Command) {
               },
               // Step 3: start:ssr-server which is compiled web app and ssr-server code
               {
+                // NOTE: deliberately NOT {node --watch}. The SSR server already
+                // re-imports the compiled config by itself after every rebuild
+                // (see ssr-server-config-loader.mts), so {--watch} only added a
+                // full process restart on top — triggered by the first byte
+                // webpack wrote, which let the fresh process import a truncated
+                // bundle ("Cannot destructure property 'renderSSRContentByPath'
+                // ... as it is undefined") and crash, or crash on a bundle built
+                // mid-refactor, and stay down until the next change.
                 runCommand: () =>
                   runStreamingCommand('node', [
-                    '--watch', // Enable watch mode for {node}
+                    // '--watch', // Enable watch mode for {node}
                     ssrServerEntryPath,
                     '--ssrServerConfig',
                     ssrServerConfigCompiledPath,
                   ]),
               },
-            ]);
+            ]).catch((error) => {
+              initProcessCatchErrorLogger('web-app', error, 'watch');
+            });
           } else {
             // ========== [Serve] CSR mode ==========
             const webpackDevServerConfigPath = fs.existsSync(
