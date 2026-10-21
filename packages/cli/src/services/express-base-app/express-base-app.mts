@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 import type { Options } from 'http-proxy-middleware';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import path from 'path';
+import { pathToFileURL } from 'url';
 
 import { runtimePathById } from '../../runtime/index.mjs';
 import { consoleColorize } from '../../utils/console-colorize.mjs';
@@ -97,8 +98,10 @@ class ExpressBaseApp {
         process.exit(1);
       }
 
+      // NOTE: a file URL, not a path — on Windows {import()} reads the drive
+      // letter of `C:\...` as a URL scheme (ERR_UNSUPPORTED_ESM_URL_SCHEME).
       const packageJson = await import(
-        path.resolve(runtimePathById.root, 'package.json'),
+        pathToFileURL(path.resolve(runtimePathById.root, 'package.json')).href,
         { with: { type: 'json' } }
       );
 
