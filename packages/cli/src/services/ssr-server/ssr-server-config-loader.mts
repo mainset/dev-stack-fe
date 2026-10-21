@@ -83,7 +83,21 @@ async function importSSRServerConfig(): Promise<SSRConfigParams> {
     ? `${ssrServerConfigFileUrl}?t=${Date.now()}`
     : ssrServerConfigFileUrl;
 
-  return (await import(specifier)).default;
+  const importedSSRServerConfig: SSRConfigParams | undefined = (
+    await import(specifier)
+  ).default;
+
+  // NOTE: webpack truncates the file before writing the new bundle, and an
+  // import landing in between reads an empty module — valid ESM with no
+  // exports, so it resolves to {undefined} instead of throwing. Throw like for
+  // any other unreadable bundle, so callers keep (or wait for) a good one.
+  if (!importedSSRServerConfig?.renderSSRContentByPath) {
+    throw new Error(
+      `"${ssrServerConfigPath}" has no default export with {renderSSRContentByPath} — most likely webpack is still writing it`,
+    );
+  }
+
+  return importedSSRServerConfig;
 }
 
 // Step-2: load SSR server config at startup — Express routes are registered
