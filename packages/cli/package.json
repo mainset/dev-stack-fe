@@ -55,5 +55,10 @@
   },
   "peerDependencies": {
     "@mainset/dev-stack-fe": ">=0.2.0 <1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mainset/dev-stack-fe": {
+      "optional": true
+    }
   }
 }
