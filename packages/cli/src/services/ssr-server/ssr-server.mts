@@ -27,6 +27,16 @@ global.init();
 
 const { app, startListening } = new ExpressBaseApp(customExpressConfig);
 
+// NOTE: in production the SSR server usually sits behind a reverse proxy that
+// ends TLS (e.g. Cloudflare → Caddy → here), so the connection this process
+// sees is plain http. Trusting the proxy's {X-Forwarded-Proto} is what makes
+// {req.protocol} — and so {fullUrl} below — `https`; otherwise every absolute
+// URL a render builds from it (canonical, hreflang, …) points at http://.
+// !IMPORTANT: trusted only from loopback / private networks (where a proxy in
+// front of this process connects from, e.g. a Docker network) — NOT `true`,
+// which would let any client that reaches the server directly fake it.
+app.set('trust proxy', 'loopback, linklocal, uniquelocal');
+
 app.use(cors());
 
 function sendSSRRenderResult(
