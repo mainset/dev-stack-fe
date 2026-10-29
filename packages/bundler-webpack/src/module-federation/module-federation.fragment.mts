@@ -88,7 +88,7 @@ const generateModuleFederationCommonWebpackConfigFragment = ({
 // Merge into the webapp (browser) compilation — in CSR the only one there is.
 // NOTE: a remote built for SSR also publishes {ssr-stylesheets.json} for its
 // hosts' SSR (see RemoteStylesheetsPlugin). Not in CSR — there is no server
-// HTML to link it from — nor with MF's manifest off, which it is read from.
+// HTML to link it from.
 const generateModuleFederationWebappWebpackConfigFragment = ({
   name,
   exposes,
@@ -97,9 +97,7 @@ const generateModuleFederationWebappWebpackConfigFragment = ({
   pluginOptions = {},
 }: ModuleFederationConfig): Configuration => {
   const isSsrRemote =
-    Boolean(exposes) &&
-    process.env.MS_CLI__WEBPACK_SERVE_MODE === 'ssr' &&
-    pluginOptions.manifest !== false;
+    Boolean(exposes) && process.env.MS_CLI__WEBPACK_SERVE_MODE === 'ssr';
 
   return {
     plugins: [
@@ -128,7 +126,7 @@ const generateModuleFederationWebappWebpackConfigFragment = ({
 // Merge into an SSR HOST's server compilation (the one that renders pages and
 // loads its remotes' server code). A remote that hosts nothing leaves its own
 // server compilation as it is.
-const generateModuleFederationSsrServerWebpackConfigFragment = ({
+const generateModuleFederationSSRServerWebpackConfigFragment = ({
   name,
   remotes,
   shared,
@@ -136,7 +134,7 @@ const generateModuleFederationSsrServerWebpackConfigFragment = ({
 }: ModuleFederationConfig): Configuration => {
   if (!fs.existsSync(SSR_SERVER_ENTRY_PATH)) {
     throw new Error(
-      `[bundler-webpack] an SSR host needs ${SSR_SERVER_ENTRY_PATH}, which imports ./ssr-server.config.mts dynamically ({webpackMode: "eager"}) — see generateModuleFederationSsrServerWebpackConfigFragment.`,
+      `[bundler-webpack] an SSR host needs ${SSR_SERVER_ENTRY_PATH}, which imports ./ssr-server.config.mts dynamically ({webpackMode: "eager"}) — see generateModuleFederationSSRServerWebpackConfigFragment.`,
     );
   }
 
@@ -179,7 +177,7 @@ const generateModuleFederationSsrServerWebpackConfigFragment = ({
 // build the app's own SSR server — and webpack-merge can't remove a key.
 // Pass the same fragment as to {generateEnvBasedWebpackConfig}, extended with
 // the server-facing {output.publicPath}.
-const generateModuleFederationSsrContainerWebpackConfig = (
+const generateModuleFederationSSRContainerWebpackConfig = (
   extendedWebpackConfig: Configuration,
   {
     name,
@@ -251,7 +249,7 @@ const generateModuleFederationSsrContainerWebpackConfig = (
 
 export {
   generateModuleFederationCommonWebpackConfigFragment,
-  generateModuleFederationSsrContainerWebpackConfig,
-  generateModuleFederationSsrServerWebpackConfigFragment,
+  generateModuleFederationSSRContainerWebpackConfig,
+  generateModuleFederationSSRServerWebpackConfigFragment,
   generateModuleFederationWebappWebpackConfigFragment,
 };

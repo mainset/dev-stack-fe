@@ -3,16 +3,12 @@ import type { Compiler } from 'webpack';
 import { SSR_STYLESHEETS_FILENAME } from './module-federation.chunk.mjs';
 
 const PLUGIN_NAME = 'RemoteStylesheetsPlugin';
+const MODULE_FEDERATION_MANIFEST_FILENAME = 'mf-manifest.json';
 
 // NOTE: only the part of Module Federation's manifest this plugin reads.
 type ModuleFederationManifest = {
   metaData: { publicPath: string };
   exposes: { path: string; assets: { css: { sync: string[] } } }[];
-};
-
-type RemoteStylesheetsPluginOptions = {
-  filename?: string;
-  manifestFilename?: string;
 };
 
 // Records, per exposed module, the stylesheets an SSR host must have in its
@@ -32,25 +28,15 @@ type RemoteStylesheetsPluginOptions = {
 // one wins), and the SSR one has no CSS at all (CSS is nulled out on the
 // server). Runs on the WEBAPP compilation only.
 //
-// Output ({ssr-stylesheets.json}), URLs absolute and exactly `publicPath +
-// file`, which is what webpack's CSS loader compares against — a <link> with
-// the same href is reused after hydration instead of being fetched twice:
+// Output ({ssr-stylesheets.json}), URLs exactly `publicPath + file` (so
+// output.publicPath must be absolute, not 'auto'), which is what webpack's CSS
+// loader compares against — a <link> with the same href is reused after
+// hydration instead of being fetched twice:
 //   { "./routes": ["https://cdn.example/landing/prod/css/806.0116.min.css"] }
 //
 // NOTE: only `sync` CSS — what the module needs to render. CSS of its lazily
 // loaded chunks (`async`) is requested when that chunk is.
 class RemoteStylesheetsPlugin {
-  private readonly filename: string;
-  private readonly manifestFilename: string;
-
-  constructor({
-    filename = SSR_STYLESHEETS_FILENAME,
-    manifestFilename = 'mf-manifest.json',
-  }: RemoteStylesheetsPluginOptions = {}) {
-    this.filename = filename;
-    this.manifestFilename = manifestFilename;
-  }
-
   apply(compiler: Compiler) {
     const { Compilation, WebpackError, sources } = compiler.webpack;
 
@@ -63,31 +49,22 @@ class RemoteStylesheetsPlugin {
           stage: Compilation.PROCESS_ASSETS_STAGE_REPORT,
         },
         () => {
-          const fail = (message: string) => {
-            compilation.errors.push(
-              new WebpackError(`${PLUGIN_NAME}: ${message}`),
-            );
-          };
+          const manifestAsset = compilation.getAsset(
+            MODULE_FEDERATION_MANIFEST_FILENAME,
+          );
 
-          const manifestAsset = compilation.getAsset(this.manifestFilename);
           if (!manifestAsset) {
-            return fail(
-              `${this.manifestFilename} was not emitted — is Module Federation's manifest disabled?`,
+            compilation.errors.push(
+              new WebpackError(
+                `${PLUGIN_NAME}: ${MODULE_FEDERATION_MANIFEST_FILENAME} was not emitted — is Module Federation's manifest disabled?`,
+              ),
             );
+            return;
           }
 
           const { metaData, exposes }: ModuleFederationManifest = JSON.parse(
             manifestAsset.source.source().toString(),
           );
-
-          // NOTE: 'auto' (and '') resolve in the visitor's browser, so there
-          // is nothing absolute to write down — and a host rendering on the
-          // server could not use it anyway.
-          if (!metaData.publicPath || metaData.publicPath === 'auto') {
-            return fail(
-              `output.publicPath must be set explicitly (got "${metaData.publicPath}")`,
-            );
-          }
 
           const stylesheetsByExpose = Object.fromEntries(
             exposes.map(({ path, assets }) => [
@@ -97,7 +74,7 @@ class RemoteStylesheetsPlugin {
           );
 
           compilation.emitAsset(
-            this.filename,
+            SSR_STYLESHEETS_FILENAME,
             new sources.RawSource(
               `${JSON.stringify(stylesheetsByExpose, null, 2)}\n`,
             ),
@@ -109,4 +86,3 @@ class RemoteStylesheetsPlugin {
 }
 
 export { RemoteStylesheetsPlugin };
-export type { RemoteStylesheetsPluginOptions };

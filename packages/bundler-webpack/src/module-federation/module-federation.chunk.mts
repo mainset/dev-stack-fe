@@ -3,7 +3,7 @@ import type { Configuration } from 'webpack';
 import type { ModuleFederationPluginOptions } from './module-federation.types.mjs';
 
 // The file names a remote's build emits — part of its contract with whatever
-// deploys and loads it, hence exported.
+// deploys and loads it.
 const REMOTE_ENTRY_FILENAME__WEBAPP = 'remoteEntry.js';
 const REMOTE_ENTRY_FILENAME__SSR = 'ssr-remoteEntry.js';
 // NOTE: written next to the webapp build, but read by the hosts' SSR — deploy
