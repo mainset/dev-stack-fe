@@ -23,6 +23,10 @@
       "types": "./dist/types/index.d.mts",
       "import": "./dist/esm/index.mjs"
     },
+    "./module-federation": {
+      "types": "./dist/types/module-federation/index.d.mts",
+      "import": "./dist/esm/module-federation/index.mjs"
+    },
     "./global-types": "./src/@types/bundler.d.ts"
   },
   "scripts": {
@@ -35,6 +39,8 @@
     "@babel/preset-env": "^8.0.2",
     "@babel/preset-react": "^8.0.1",
     "@babel/preset-typescript": "^8.0.1",
+    "@module-federation/enhanced": "^2.9.2",
+    "@module-federation/node": "^2.7.52",
     "babel-loader": "^10.1.1",
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^7.1.4",
