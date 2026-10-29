@@ -6,6 +6,10 @@ import type { ModuleFederationPluginOptions } from './module-federation.types.mj
 // deploys and loads it, hence exported.
 const REMOTE_ENTRY_FILENAME__WEBAPP = 'remoteEntry.js';
 const REMOTE_ENTRY_FILENAME__SSR = 'ssr-remoteEntry.js';
+// NOTE: written next to the webapp build, but read by the hosts' SSR — deploy
+// it with the server build (ssr-remoteEntry.js), not with the browser files,
+// so it switches together with the server code that renders the markup.
+const SSR_STYLESHEETS_FILENAME = 'ssr-stylesheets.json';
 
 // NOTE: without this, the webapp entry consumes the shared singletons
 // synchronously before Module Federation's share-scope negotiation gets an
@@ -56,5 +60,6 @@ export {
   DOCKER_SAFE__MODULE_FEDERATION_CONFIG_CHUNK,
   REMOTE_ENTRY_FILENAME__SSR,
   REMOTE_ENTRY_FILENAME__WEBAPP,
+  SSR_STYLESHEETS_FILENAME,
   WATCH_OPTIONS__MODULE_FEDERATION__WEBPACK_CONFIG_CHUNK,
 };

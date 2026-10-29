@@ -21,6 +21,7 @@ import type {
   ModuleFederationConfig,
   ModuleFederationRemote,
 } from './module-federation.types.mjs';
+import { RemoteStylesheetsPlugin } from './remote-stylesheets.plugin.mjs';
 
 // NOTE: an SSR host's server entry has to reach its SSR config through a
 // dynamic import — a static import of the shared deps (e.g. react-dom/server)
@@ -85,30 +86,44 @@ const generateModuleFederationCommonWebpackConfigFragment = ({
   });
 
 // Merge into the webapp (browser) compilation — in CSR the only one there is.
+// NOTE: a remote built for SSR also publishes {ssr-stylesheets.json} for its
+// hosts' SSR (see RemoteStylesheetsPlugin). Not in CSR — there is no server
+// HTML to link it from — nor with MF's manifest off, which it is read from.
 const generateModuleFederationWebappWebpackConfigFragment = ({
   name,
   exposes,
   remotes,
   shared,
   pluginOptions = {},
-}: ModuleFederationConfig): Configuration => ({
-  plugins: [
-    new ModuleFederationPlugin(
-      merge(
-        {
-          name,
-          ...(exposes && { filename: REMOTE_ENTRY_FILENAME__WEBAPP, exposes }),
-          ...(remotes && {
-            remotes: generatePluginRemotes(remotes, 'webappEntry'),
-          }),
-          shared,
-        },
-        ASYNC_STARTUP__MODULE_FEDERATION_CONFIG_CHUNK,
-        pluginOptions,
+}: ModuleFederationConfig): Configuration => {
+  const isSsrRemote =
+    Boolean(exposes) &&
+    process.env.MS_CLI__WEBPACK_SERVE_MODE === 'ssr' &&
+    pluginOptions.manifest !== false;
+
+  return {
+    plugins: [
+      new ModuleFederationPlugin(
+        merge(
+          {
+            name,
+            ...(exposes && {
+              filename: REMOTE_ENTRY_FILENAME__WEBAPP,
+              exposes,
+            }),
+            ...(remotes && {
+              remotes: generatePluginRemotes(remotes, 'webappEntry'),
+            }),
+            shared,
+          },
+          ASYNC_STARTUP__MODULE_FEDERATION_CONFIG_CHUNK,
+          pluginOptions,
+        ),
       ),
-    ),
-  ],
-});
+      ...(isSsrRemote ? [new RemoteStylesheetsPlugin()] : []),
+    ],
+  };
+};
 
 // Merge into an SSR HOST's server compilation (the one that renders pages and
 // loads its remotes' server code). A remote that hosts nothing leaves its own
