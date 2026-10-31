@@ -30,14 +30,22 @@ const SSR_SERVER_BABEL_LOADER__RULE__WEBPACK_CONFIG_FRAGMENT: RuleSetRule =
 
 const IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS: RuleSetRule[] = [
   {
-    test: /\.(svg|png)$/,
+    test: /\.(avif|gif|ico|jpe?g|png|svg|webp)$/i,
     exclude: /\.source\.svg$/,
     type: 'asset/resource',
     generator: {
-      filename: '[name].[contenthash:8].[ext]',
+      // NOTE: written to `<output.path>/assets/images/`, loaded from
+      // `<output.publicPath>assets/images/`. `[ext]` already includes the dot.
+      filename: 'assets/images/[name].[contenthash:8][ext]',
+      // NOTE: replaced by the folder in {filename} above — the only option
+      // webpack applies to both the file and its URL. {outputPath} never
+      // reaches the URL, and a {publicPath} here REPLACES {output.publicPath}:
+      // a relative one resolves against the page's URL, which breaks on nested
+      // routes (/en/docninja → /en/assets/images/…) and for Module Federation
+      // remotes, whose images live on their own origin (CDN), not the host's.
       // NOTE: the following paths are relative to the webpack output path (e.g. dist/)
-      outputPath: 'assets/images/',
-      publicPath: 'assets/images/',
+      // outputPath: 'assets/images/',
+      // publicPath: 'assets/images/',
     },
   },
   {
