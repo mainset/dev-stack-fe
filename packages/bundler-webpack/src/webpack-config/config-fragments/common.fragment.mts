@@ -19,10 +19,15 @@ const commonWebpackConfigFragment: Configuration = {
         ...FONTS__RULE_TEST_REGEX__WEBPACK_CONFIG_CHUNK,
         type: 'asset/resource',
         generator: {
-          filename: '[name].[contenthash:8].[ext]',
-          // NOTE: the following paths are relative to the webpack output path (e.g. dist/)
-          outputPath: 'assets/fonts/',
-          publicPath: 'assets/fonts/',
+          // NOTE: same as the images rule (module-rules.fragment.mts): written
+          // to `<output.path>/assets/fonts/`, loaded from
+          // `<output.publicPath>assets/fonts/`. `[ext]` already includes the dot.
+          filename: 'assets/fonts/[name].[contenthash:8][ext]',
+          // NOTE: no {outputPath}/{publicPath} here — a {publicPath} REPLACES
+          // {output.publicPath}, and a relative one resolves against the
+          // page's URL (style-loader) or the stylesheet's (extracted CSS):
+          // fonts 404 on nested routes and for Module Federation remotes,
+          // whose fonts live on their own origin (CDN), not the host's.
         },
       },
     ],
