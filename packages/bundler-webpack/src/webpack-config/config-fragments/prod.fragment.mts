@@ -26,7 +26,19 @@ const prodWebpackConfigFragment: Configuration = {
         commons: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
-          chunks: 'all',
+          // NOTE: initial chunks only — the packages a page needs to start.
+          // With 'all' and a fixed {name}, every package from node_modules,
+          // including those only reached through a dynamic import(), lands in
+          // this ONE chunk, which the entry loads up front: a lazy
+          // `import('posthog-js')` was downloaded and run on every page before
+          // its first paint. In a Module Federation remote it also packed the
+          // fallback copies of the shared deps (react-dom, react-router, …)
+          // next to the packages its exposed modules do load, so every host
+          // downloaded a second React it never runs.
+          // Lazily loaded packages are left to webpack's default async
+          // splitting ({defaultVendors}): chunks of their own, fetched by the
+          // import() that needs them.
+          chunks: 'initial',
         },
       },
     },

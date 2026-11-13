@@ -1,6 +1,7 @@
 import type { Compiler } from 'webpack';
 
 import { SSR_STYLESHEETS_FILENAME } from './module-federation.chunk.mjs';
+import type { SSRStylesheetsByExpose } from './module-federation.types.mjs';
 
 const PLUGIN_NAME = 'RemoteStylesheetsPlugin';
 const MODULE_FEDERATION_MANIFEST_FILENAME = 'mf-manifest.json';
@@ -28,11 +29,18 @@ type ModuleFederationManifest = {
 // one wins), and the SSR one has no CSS at all (CSS is nulled out on the
 // server). Runs on the WEBAPP compilation only.
 //
-// Output ({ssr-stylesheets.json}), URLs exactly `publicPath + file` (so
-// output.publicPath must be absolute, not 'auto'), which is what webpack's CSS
-// loader compares against — a <link> with the same href is reused after
-// hydration instead of being fetched twice:
-//   { "./routes": ["https://cdn.example/landing/prod/css/806.0116.min.css"] }
+// Output ({ssr-stylesheets.json}), per stylesheet its URL and its text:
+//   { "./routes": [{ "href": "https://cdn.example/landing/prod/css/806.0116.min.css", "content": "…" }] }
+// - `href` is exactly `publicPath + file` (so output.publicPath must be
+//   absolute, not 'auto'): what webpack's CSS loader compares against. A
+//   <link href> or a <style data-href> with that URL counts as the chunk's CSS
+//   being on the page already, so it isn't fetched again after hydration.
+// - `content` lets the host inline the CSS (<style data-href>) instead of
+//   linking it: a <link> holds first paint until the file arrives from the
+//   remote's origin, an extra connection on the critical path. It is the
+//   file's final text, so the URLs in it must be absolute as well (they are,
+//   with an absolute publicPath): inlined, they resolve against the page,
+//   not against the stylesheet.
 //
 // NOTE: only `sync` CSS — what the module needs to render. CSS of its lazily
 // loaded chunks (`async`) is requested when that chunk is.
@@ -45,7 +53,8 @@ class RemoteStylesheetsPlugin {
         {
           name: PLUGIN_NAME,
           // NOTE: Module Federation emits its manifest at
-          // PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER (3000) — this has to run after.
+          // PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER (3000) — this has to run
+          // after. Late enough, too, for the stylesheets to be final.
           stage: Compilation.PROCESS_ASSETS_STAGE_REPORT,
         },
         () => {
@@ -66,12 +75,30 @@ class RemoteStylesheetsPlugin {
             manifestAsset.source.source().toString(),
           );
 
-          const stylesheetsByExpose = Object.fromEntries(
-            exposes.map(({ path, assets }) => [
-              path,
-              assets.css.sync.map((file) => `${metaData.publicPath}${file}`),
-            ]),
-          );
+          const readStylesheet = (file: string) => {
+            const stylesheetAsset = compilation.getAsset(file);
+
+            if (!stylesheetAsset) {
+              compilation.errors.push(
+                new WebpackError(
+                  `${PLUGIN_NAME}: ${MODULE_FEDERATION_MANIFEST_FILENAME} lists ${file}, which was not emitted.`,
+                ),
+              );
+            }
+
+            return {
+              href: `${metaData.publicPath}${file}`,
+              content: stylesheetAsset?.source.source().toString() ?? '',
+            };
+          };
+
+          const stylesheetsByExpose: SSRStylesheetsByExpose =
+            Object.fromEntries(
+              exposes.map(({ path, assets }) => [
+                path,
+                assets.css.sync.map(readStylesheet),
+              ]),
+            );
 
           compilation.emitAsset(
             SSR_STYLESHEETS_FILENAME,

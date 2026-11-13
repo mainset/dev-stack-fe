@@ -12,4 +12,6 @@ export type {
   ModuleFederationConfig,
   ModuleFederationRemote,
   ModuleFederationSharedConfig,
+  SSRStylesheet,
+  SSRStylesheetsByExpose,
 } from './module-federation.types.mjs';
