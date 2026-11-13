@@ -38,12 +38,20 @@ async function handleConfigurationDependencies(targetDir: string) {
     rl.close();
 
     let installCommand = '';
+    // NOTE: the tools @mainset/dev-stack-fe's configs are for — its
+    // peerDependencies. They're the project's own (not dev-stack-fe's
+    // dependencies) because only a project's direct dependencies get their
+    // commands in node_modules/.bin, for its scripts and git hooks, and editors
+    // load them from the project. The plugins the configs use come with
+    // dev-stack-fe.
     const packages = [
       '@mainset/dev-stack-fe',
       '@mainset/cli',
+      '@commitlint/cli',
       'cross-env',
       'eslint',
       'husky',
+      'lint-staged',
       'prettier',
       'stylelint',
     ].join(' ');
