@@ -41,9 +41,22 @@ type ModuleFederationConfig = {
   pluginOptions?: Partial<ModuleFederationPluginOptions>;
 };
 
+// The contents of a remote's {ssr-stylesheets.json} (SSR_STYLESHEETS_FILENAME),
+// keyed by exposed module — see RemoteStylesheetsPlugin.
+type SSRStylesheet = {
+  // The URL webpack's CSS loader knows the stylesheet by: use it as the
+  // <link href>, or as the <style data-href> when inlining `content`.
+  href: string;
+  content: string;
+};
+
+type SSRStylesheetsByExpose = Record<string, SSRStylesheet[]>;
+
 export type {
   ModuleFederationConfig,
   ModuleFederationPluginOptions,
   ModuleFederationRemote,
   ModuleFederationSharedConfig,
+  SSRStylesheet,
+  SSRStylesheetsByExpose,
 };
