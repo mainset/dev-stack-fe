@@ -37,11 +37,16 @@ const ssrServerConfig: SSRConfigParams = {
                 // Context
               });
 
+              // NOTE: the replacement goes through a function, never a
+              // replacement string — String#replace would expand `$&` / `$'`
+              // found in the markup (a price, a code sample) into pieces of
+              // the template.
               const content = htmlData.replace(
                 '<div id="example-react"></div>',
-                `<div id="example-react">${ReactDOMServer.renderToString(
-                  appHtml,
-                )}</div>`,
+                () =>
+                  `<div id="example-react">${ReactDOMServer.renderToString(
+                    appHtml,
+                  )}</div>`,
               );
 
               return resolve({ html: content });

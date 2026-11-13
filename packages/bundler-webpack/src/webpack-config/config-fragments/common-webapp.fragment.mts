@@ -40,6 +40,19 @@ if (fs.existsSync(scssGlobalStylesEntry))
 
 const commonWebappWebpackConfigFragment = merge(commonWebpackConfigFragment, {
   entry: defaultEntry,
+  output: {
+    // NOTE: absolute, not webpack's default 'auto' — with 'auto',
+    // html-webpack-plugin writes a RELATIVE script src ("js/main.js"), which
+    // the browser resolves against the page URL's folder. At "/a/b" it asks
+    // for "/a/js/main.js": the SSR server's catch-all answers that with an
+    // HTML page, so the page shows its server markup but never hydrates (and,
+    // in dev, never gets its styles — style-loader injects them from that
+    // bundle). The same goes for CSR's history fallback.
+    // Override it for files served from elsewhere — a CDN, or a Module
+    // Federation remote, whose files load on its hosts' pages: set
+    // {output.publicPath} to where they are.
+    publicPath: '/',
+  },
 });
 
 export { commonWebappWebpackConfigFragment, createPublicAssetsCopyPlugin };

@@ -91,6 +91,28 @@ const generateModuleFederationCommonWebpackConfigFragment = ({
     },
   });
 
+// A remote's files load on its hosts' pages, so the default publicPath '/'
+// (common-webapp.fragment.mts) points at the HOST's origin — every chunk
+// would 404 there, or come back as the host's HTML. Warns rather than
+// overriding it: where the remote's files are is something only the app knows.
+// A plugin (not a bare check) so it reads the final, merged config.
+const REMOTE_PUBLIC_PATH_CHECK_PLUGIN_NAME = 'RemotePublicPathCheckPlugin';
+const REMOTE_PUBLIC_PATH_CHECK_PLUGIN = {
+  apply: (compiler: Compiler) =>
+    compiler.hooks.thisCompilation.tap(
+      REMOTE_PUBLIC_PATH_CHECK_PLUGIN_NAME,
+      (compilation) => {
+        if (compiler.options.output.publicPath === '/') {
+          compilation.warnings.push(
+            new compiler.webpack.WebpackError(
+              `${REMOTE_PUBLIC_PATH_CHECK_PLUGIN_NAME}: output.publicPath is "/" — this remote's files load on its hosts' pages, where "/" is the host's origin. Set output.publicPath to where the remote's files are served (e.g. its CDN URL).`,
+            ),
+          );
+        }
+      },
+    ),
+};
+
 // Merge into the webapp (browser) compilation — in CSR the only one there is.
 // NOTE: a remote built for SSR also publishes {ssr-stylesheets.json} and
 // {ssr-scripts.json} for its hosts' SSR (see RemoteStylesheetsPlugin,
@@ -128,6 +150,7 @@ const generateModuleFederationWebappWebpackConfigFragment = ({
           pluginOptions,
         ),
       ),
+      ...(exposes ? [REMOTE_PUBLIC_PATH_CHECK_PLUGIN] : []),
       ...(isSsrRemote
         ? [new RemoteStylesheetsPlugin(), new RemoteScriptsPlugin()]
         : []),
