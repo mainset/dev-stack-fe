@@ -1,6 +1,6 @@
 {
   "name": "@mainset/dev-stack-fe",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Modern dev stack for front-end infrastructure for mainset projects",
   "homepage": "https://github.com/mainset/dev-stack-fe/tree/main/packages/dev-stack-fe",
   "bugs": {
