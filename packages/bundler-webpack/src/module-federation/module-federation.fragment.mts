@@ -22,6 +22,7 @@ import type {
   ModuleFederationRemote,
 } from './module-federation.types.mjs';
 import { RemoteStylesheetsPlugin } from './remote-stylesheets.plugin.mjs';
+import { Utf8ChunkLoadingPlugin } from './utf8-chunk-loading.plugin.mjs';
 
 // NOTE: an SSR host's server entry has to reach its SSR config through a
 // dynamic import — a static import of the shared deps (e.g. react-dom/server)
@@ -166,6 +167,9 @@ const generateModuleFederationSSRServerWebpackConfigFragment = ({
         remotes: pluginRemotes,
         shared: eagerShared,
       }),
+      // TODO: drop once @module-federation/node decodes chunks as UTF-8 — see
+      // utf8-chunk-loading.plugin.mts (a build warning says when).
+      new Utf8ChunkLoadingPlugin(),
     ],
   };
 };
@@ -242,6 +246,9 @@ const generateModuleFederationSSRContainerWebpackConfig = (
           library: { type: 'commonjs-module' },
           remotes: pluginRemotes,
         }),
+        // TODO: drop once @module-federation/node decodes chunks as UTF-8 —
+        // see utf8-chunk-loading.plugin.mts (a build warning says when).
+        new Utf8ChunkLoadingPlugin(),
       ],
     },
   );
