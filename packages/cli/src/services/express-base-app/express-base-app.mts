@@ -49,6 +49,13 @@ class ExpressBaseApp {
   }
 
   // ========== Private ==========
+  // NOTE: no CORS middleware, in any mode — nothing this server answers is
+  // meant to be read by scripts on other origins. A browser does need CORS
+  // for some cross-origin files (fonts, anything `fetch`ed), which is what a
+  // module-federation host on :3000 loading a remote's files from :3001 runs
+  // into: forward the remote's files through the host's own origin with a
+  // `proxyConfigByPath` entry instead, so they are same-origin. Deployed, the
+  // CDN serving the files sends its own CORS headers.
   private appUseStatic({
     serveStatics,
   }: Pick<ExpressBaseAppConfig, 'serveStatics'>) {

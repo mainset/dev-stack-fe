@@ -1,4 +1,3 @@
-import cors from 'cors';
 // NOTE: aliased so that a bare {Response} in this file unambiguously means the
 // global fetch Response — which is what a thrown redirect / error actually is.
 import type {
@@ -37,7 +36,11 @@ const { app, startListening } = new ExpressBaseApp(customExpressConfig);
 // which would let any client that reaches the server directly fake it.
 app.set('trust proxy', 'loopback, linklocal, uniquelocal');
 
-app.use(cors());
+// NOTE: no CORS — a page is only ever loaded from its own site, so no other
+// origin's scripts need to read it (or anything proxied here). It used to be
+// `app.use(cors())`, which let any website read every page and proxied path
+// and approved preflights for every method; see ExpressBaseApp for how
+// cross-origin files are handled in development instead.
 
 function sendSSRRenderResult(
   res: ExpressResponse,
