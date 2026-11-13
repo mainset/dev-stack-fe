@@ -10,6 +10,10 @@ const REMOTE_ENTRY_FILENAME__SSR = 'ssr-remoteEntry.js';
 // it with the server build (ssr-remoteEntry.js), not with the browser files,
 // so it switches together with the server code that renders the markup.
 const SSR_STYLESHEETS_FILENAME = 'ssr-stylesheets.json';
+// NOTE: the same, for the browser scripts each exposed module needs — which
+// the hosts' SSR preloads (see RemoteScriptsPlugin). Deploy it with the server
+// build too.
+const SSR_SCRIPTS_FILENAME = 'ssr-scripts.json';
 
 // NOTE: without this, the webapp entry consumes the shared singletons
 // synchronously before Module Federation's share-scope negotiation gets an
@@ -60,6 +64,7 @@ export {
   DOCKER_SAFE__MODULE_FEDERATION_CONFIG_CHUNK,
   REMOTE_ENTRY_FILENAME__SSR,
   REMOTE_ENTRY_FILENAME__WEBAPP,
+  SSR_SCRIPTS_FILENAME,
   SSR_STYLESHEETS_FILENAME,
   WATCH_OPTIONS__MODULE_FEDERATION__WEBPACK_CONFIG_CHUNK,
 };

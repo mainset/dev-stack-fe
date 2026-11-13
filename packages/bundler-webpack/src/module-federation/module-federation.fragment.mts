@@ -2,7 +2,7 @@ import { runtimePathById } from '@mainset/cli/runtime';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/webpack';
 import fs from 'fs';
 import path from 'path';
-import type { Configuration } from 'webpack';
+import type { Compiler, Configuration } from 'webpack';
 import { merge } from 'webpack-merge';
 
 import ssrServerEnvBasedConfig from '../webpack-config/server.ssr.config.mjs';
@@ -15,12 +15,17 @@ import {
   ASYNC_STARTUP__MODULE_FEDERATION_CONFIG_CHUNK,
   REMOTE_ENTRY_FILENAME__SSR,
   REMOTE_ENTRY_FILENAME__WEBAPP,
+  SSR_SCRIPTS_FILENAME,
+  SSR_STYLESHEETS_FILENAME,
   WATCH_OPTIONS__MODULE_FEDERATION__WEBPACK_CONFIG_CHUNK,
 } from './module-federation.chunk.mjs';
 import type {
   ModuleFederationConfig,
   ModuleFederationRemote,
+  SSRRemote,
 } from './module-federation.types.mjs';
+import { PreloadStartupScriptsPlugin } from './preload-startup-scripts.plugin.mjs';
+import { RemoteScriptsPlugin } from './remote-scripts.plugin.mjs';
 import { RemoteStylesheetsPlugin } from './remote-stylesheets.plugin.mjs';
 import { Utf8ChunkLoadingPlugin } from './utf8-chunk-loading.plugin.mjs';
 
@@ -87,9 +92,13 @@ const generateModuleFederationCommonWebpackConfigFragment = ({
   });
 
 // Merge into the webapp (browser) compilation — in CSR the only one there is.
-// NOTE: a remote built for SSR also publishes {ssr-stylesheets.json} for its
-// hosts' SSR (see RemoteStylesheetsPlugin). Not in CSR — there is no server
-// HTML to link it from.
+// NOTE: a remote built for SSR also publishes {ssr-stylesheets.json} and
+// {ssr-scripts.json} for its hosts' SSR (see RemoteStylesheetsPlugin,
+// RemoteScriptsPlugin, and buildRemoteHeadTags in ./ssr-head). Not in CSR —
+// there is no server HTML to put them in.
+// NOTE: every app's page preloads its own startup scripts (see
+// PreloadStartupScriptsPlugin) — the ones its dynamic imports marked
+// `webpackPreload: true` lead to.
 const generateModuleFederationWebappWebpackConfigFragment = ({
   name,
   exposes,
@@ -119,8 +128,46 @@ const generateModuleFederationWebappWebpackConfigFragment = ({
           pluginOptions,
         ),
       ),
-      ...(isSsrRemote ? [new RemoteStylesheetsPlugin()] : []),
+      ...(isSsrRemote
+        ? [new RemoteStylesheetsPlugin(), new RemoteScriptsPlugin()]
+        : []),
+      new PreloadStartupScriptsPlugin(),
     ],
+  };
+};
+
+// What the SSR host's server code knows of its remotes — the URLs of the
+// files each remote's build publishes for it — so `buildRemoteHeadTags`
+// (./ssr-head) works with nothing passed. Baked in at build time, because the
+// remotes' URLs are build inputs: a production container may not have them in
+// its environment. A plugin (not a bare DefinePlugin) so the compilation's own
+// webpack is used.
+// NOTE: the files sit next to the remote's server build (`ssrServerEntry`),
+// so a remote's deploy switches them together with the server code.
+const generateSSRRemotesDefinePlugin = (
+  remotes: ModuleFederationConfig['remotes'] = {},
+) => {
+  const ssrRemotes: SSRRemote[] = Object.entries(remotes).flatMap(
+    ([remoteName, { webappEntry, ssrServerEntry }]) =>
+      ssrServerEntry
+        ? [
+            {
+              name: remoteName,
+              remoteEntryUrl: webappEntry,
+              stylesheetsUrl: new URL(SSR_STYLESHEETS_FILENAME, ssrServerEntry)
+                .href,
+              scriptsUrl: new URL(SSR_SCRIPTS_FILENAME, ssrServerEntry).href,
+            },
+          ]
+        : [],
+  );
+
+  return {
+    apply: (compiler: Compiler) =>
+      new compiler.webpack.DefinePlugin({
+        // NOTE: read in ./ssr-head/remote-head-tags.mts — keep in sync.
+        MS_MODULE_FEDERATION__SSR_REMOTES: JSON.stringify(ssrRemotes),
+      }).apply(compiler),
   };
 };
 
@@ -170,6 +217,7 @@ const generateModuleFederationSSRServerWebpackConfigFragment = ({
       // TODO: drop once @module-federation/node decodes chunks as UTF-8 — see
       // utf8-chunk-loading.plugin.mts (a build warning says when).
       new Utf8ChunkLoadingPlugin(),
+      generateSSRRemotesDefinePlugin(remotes),
     ],
   };
 };

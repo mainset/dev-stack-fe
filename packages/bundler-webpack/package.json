@@ -27,6 +27,10 @@
       "types": "./dist/types/module-federation/index.d.mts",
       "import": "./dist/esm/module-federation/index.mjs"
     },
+    "./module-federation/ssr-head": {
+      "types": "./dist/types/module-federation/ssr-head/index.d.mts",
+      "import": "./dist/esm/module-federation/ssr-head/index.mjs"
+    },
     "./global-types": "./src/@types/bundler.d.ts"
   },
   "scripts": {

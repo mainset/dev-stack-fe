@@ -52,11 +52,31 @@ type SSRStylesheet = {
 
 type SSRStylesheetsByExpose = Record<string, SSRStylesheet[]>;
 
+// The contents of a remote's {ssr-scripts.json} (SSR_SCRIPTS_FILENAME): per
+// exposed module, the URLs of the browser scripts it needs — see
+// RemoteScriptsPlugin.
+type SSRScriptsByExpose = Record<string, string[]>;
+
+// What an SSR host's server knows about each of its remotes, to put their
+// stylesheets and script preloads in its pages' <head> — defined at build time
+// by generateModuleFederationSSRServerWebpackConfigFragment from the `remotes`
+// config, read by `buildRemoteHeadTags` (./ssr-head).
+type SSRRemote = {
+  name: string;
+  // The URL browsers load the remote's {remoteEntry.js} from (`webappEntry`).
+  remoteEntryUrl: string;
+  // Both next to the remote's server build (`ssrServerEntry`).
+  stylesheetsUrl: string;
+  scriptsUrl: string;
+};
+
 export type {
   ModuleFederationConfig,
   ModuleFederationPluginOptions,
   ModuleFederationRemote,
   ModuleFederationSharedConfig,
+  SSRRemote,
+  SSRScriptsByExpose,
   SSRStylesheet,
   SSRStylesheetsByExpose,
 };
