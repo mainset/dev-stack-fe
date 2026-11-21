@@ -8,7 +8,7 @@ import {
   CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
 } from './module-rules/index.mjs';
 
-const devWebpackConfigFragment: Configuration = {
+const DEV__WEBPACK_CONFIG_FRAGMENT: Configuration = {
   mode: 'development',
   output: {
     filename: 'js/[name].js',
@@ -57,4 +57,4 @@ const devWebpackConfigFragment: Configuration = {
   },
 };
 
-export { devWebpackConfigFragment };
+export { DEV__WEBPACK_CONFIG_FRAGMENT };

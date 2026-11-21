@@ -6,16 +6,20 @@ import type { Configuration as WebpackConfig } from 'webpack';
 import type { Configuration as DevServerConfig } from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-import csrWebappEnvBasedConfig from './webapp.csr.config.mjs';
+import type { WebAppPaths } from './webapp-paths.mjs';
+import { resolveWebAppPaths } from './webapp-paths.mjs';
+import { generateCsrWebappEnvBasedConfig } from './webapp.csr.config.mjs';
 
 const proxyConfigPath = path.join(runtimePathById.config, 'proxy.config.mjs');
 const proxyConfigByPath = fs.existsSync(proxyConfigPath)
   ? (await import(pathToFileURL(proxyConfigPath).href)).default
   : {};
 
-const csrDevServerWebappEnvBasedConfig: WebpackConfig & DevServerConfig = merge(
-  csrWebappEnvBasedConfig,
-  {
+/** A client-rendered app served by webpack-dev-server, built from {paths} */
+const generateCsrDevServerWebappEnvBasedConfig = (
+  paths: WebAppPaths,
+): WebpackConfig & DevServerConfig =>
+  merge(generateCsrWebappEnvBasedConfig(paths), {
     devtool: 'inline-source-map',
     devServer: {
       port: process.env.PORT || 3000,
@@ -26,7 +30,8 @@ const csrDevServerWebappEnvBasedConfig: WebpackConfig & DevServerConfig = merge(
       hot: true,
       proxy: Object.values(proxyConfigByPath),
     },
-  },
-);
+  });
 
-export default csrDevServerWebappEnvBasedConfig;
+export { generateCsrDevServerWebappEnvBasedConfig };
+
+export default generateCsrDevServerWebappEnvBasedConfig(resolveWebAppPaths());

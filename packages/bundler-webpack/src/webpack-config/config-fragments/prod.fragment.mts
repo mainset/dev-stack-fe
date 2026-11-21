@@ -10,7 +10,7 @@ import {
   CSS_STYLES__RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
 } from './module-rules/index.mjs';
 
-const prodWebpackConfigFragment: Configuration = {
+const PROD__WEBPACK_CONFIG_FRAGMENT: Configuration = {
   mode: 'production',
   output: {
     // - Use [contenthash] (or [chunkhash]) instead of [hash] for better long-term caching.
@@ -83,4 +83,4 @@ const prodWebpackConfigFragment: Configuration = {
   ],
 };
 
-export { prodWebpackConfigFragment };
+export { PROD__WEBPACK_CONFIG_FRAGMENT };

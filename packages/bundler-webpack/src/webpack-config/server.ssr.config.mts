@@ -8,7 +8,7 @@ import path from 'path';
 import type { Configuration } from 'webpack';
 import { merge } from 'webpack-merge';
 
-import { commonWebpackConfigFragment } from './config-fragments/common.fragment.mjs';
+import { COMMON__WEBPACK_CONFIG_FRAGMENT } from './config-fragments/common.fragment.mjs';
 import {
   CSS_LOADER__DEV_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
   CSS_LOADER__PROD_RULE_USE_OPTIONS__WEBPACK_CONFIG_CHUNK,
@@ -30,18 +30,18 @@ const nullLoaderModuleRules = [
   ),
 }));
 
-const ssrServerCommonWebpackConfigFragment: Configuration = {
+const SSR_SERVER_COMMON__WEBPACK_CONFIG_FRAGMENT: Configuration = {
   // common config
-  resolve: commonWebpackConfigFragment.resolve,
+  resolve: COMMON__WEBPACK_CONFIG_FRAGMENT.resolve,
 
   // SSR server dedicated config
   target: 'node',
-  entry: {
-    'ssr-server.config': path.join(
-      runtimePathById.config,
-      'ssr-server.config.mts',
-    ),
-  },
+  // entry: {
+  //   'ssr-server.config': path.join(
+  //     runtimePathById.config,
+  //     'ssr-server.config.mts',
+  //   ),
+  // },
   output: {
     path: path.join(runtimePathById.dist, 'private'),
     filename: '[name].mjs',
@@ -122,7 +122,7 @@ const generateSSRCssStylesRuleWebpackConfigFragment = ({
   };
 };
 
-const ssrServerProdWebpackConfigFragment: Configuration = {
+const SSR_SERVER_PROD__WEBPACK_CONFIG_FRAGMENT: Configuration = {
   mode: 'production',
 
   module: {
@@ -134,7 +134,7 @@ const ssrServerProdWebpackConfigFragment: Configuration = {
   },
 };
 
-const ssrServerDevWebpackConfigFragment: Configuration = {
+const SSR_SERVER_DEV__WEBPACK_CONFIG_FRAGMENT: Configuration = {
   mode: 'development',
   devtool: 'inline-source-map',
 
@@ -147,16 +147,29 @@ const ssrServerDevWebpackConfigFragment: Configuration = {
   },
 };
 
-const ssrServerEnvBasedConfig = {
+const SSR_SERVER__WEBPACK_CONFIG_FRAGMENT__BY_NODE_ENV = {
   [NODE_ENV.PRODUCTION]: merge(
-    ssrServerProdWebpackConfigFragment,
-    ssrServerCommonWebpackConfigFragment,
+    SSR_SERVER_PROD__WEBPACK_CONFIG_FRAGMENT,
+    SSR_SERVER_COMMON__WEBPACK_CONFIG_FRAGMENT,
   ),
   [NODE_ENV.DEVELOPMENT]: merge(
-    ssrServerDevWebpackConfigFragment,
-    ssrServerCommonWebpackConfigFragment,
+    SSR_SERVER_DEV__WEBPACK_CONFIG_FRAGMENT,
+    SSR_SERVER_COMMON__WEBPACK_CONFIG_FRAGMENT,
   ),
 };
 
-// NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
-export default ssrServerEnvBasedConfig[process.env.NODE_ENV!];
+/** The SSR server: {ssrServerConfig} compiled into `dist/private/ssr-server.config.mjs` */
+const generateSsrServerEnvBasedConfig = (
+  ssrServerConfig = path.join(runtimePathById.config, 'ssr-server.config.mts'),
+): Configuration =>
+  merge(
+    // NOTE: the {NODE_ENV} handled and established in {verifyOrSetNodeEnv} of {ms-cli}
+    SSR_SERVER__WEBPACK_CONFIG_FRAGMENT__BY_NODE_ENV[
+      process.env.NODE_ENV! as NodeEnv
+    ],
+    { entry: { 'ssr-server.config': ssrServerConfig } },
+  );
+
+export { generateSsrServerEnvBasedConfig };
+
+export default generateSsrServerEnvBasedConfig();
