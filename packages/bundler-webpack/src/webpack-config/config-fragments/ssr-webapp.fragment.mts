@@ -1,29 +1,33 @@
-import { runtimePathById } from '@mainset/cli/runtime';
-import fs from 'fs';
 import path from 'path';
+import type { Configuration } from 'webpack';
 import { merge } from 'webpack-merge';
 
 import {
-  commonWebappWebpackConfigFragment,
+  COMMON_WEBAPP__WEBPACK_CONFIG_FRAGMENT,
   createPublicAssetsCopyPlugin,
 } from './common-webapp.fragment.mjs';
 
+// eslint-disable-next-line no-lone-blocks
+{
+  /*
 // The entry point for the SSR webapp
 const defaultEntry = path.join(runtimePathById.src, 'index.ts');
 const ssrEntry = path.join(runtimePathById.src, 'index.ssr.ts');
 
 const bundlerEntry = fs.existsSync(ssrEntry) ? ssrEntry : defaultEntry;
+*/
+}
 
 const ssrPublicOutputPath = path.join(
-  commonWebappWebpackConfigFragment.output?.path || '',
+  COMMON_WEBAPP__WEBPACK_CONFIG_FRAGMENT.output?.path || '',
   'public',
 );
 
-const ssrWebappWebpackConfigFragment = merge(
-  // NOTE: the Web App config used to compile entry point of {global.css} styles
-  commonWebappWebpackConfigFragment,
+// The Web App half of an SSR app, written to {dist/public}, which the SSR server serves
+const SSR_WEBAPP__WEBPACK_CONFIG_FRAGMENT: Configuration = merge(
+  COMMON_WEBAPP__WEBPACK_CONFIG_FRAGMENT,
   {
-    entry: [bundlerEntry],
+    // entry: [bundlerEntry],
     output: {
       path: ssrPublicOutputPath,
     },
@@ -31,4 +35,4 @@ const ssrWebappWebpackConfigFragment = merge(
   },
 );
 
-export { ssrWebappWebpackConfigFragment };
+export { SSR_WEBAPP__WEBPACK_CONFIG_FRAGMENT };

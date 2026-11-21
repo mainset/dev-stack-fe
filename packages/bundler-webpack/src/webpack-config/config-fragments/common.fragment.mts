@@ -7,7 +7,7 @@ import {
   IMAGES__RULE__WEBPACK_CONFIG_FRAGMENTS,
 } from './module-rules/index.mjs';
 
-const commonWebpackConfigFragment: Configuration = {
+const COMMON__WEBPACK_CONFIG_FRAGMENT: Configuration = {
   output: {
     path: runtimePathById.dist,
   },
@@ -47,4 +47,4 @@ const commonWebpackConfigFragment: Configuration = {
   },
 };
 
-export { commonWebpackConfigFragment };
+export { COMMON__WEBPACK_CONFIG_FRAGMENT };
